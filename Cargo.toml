@@ -1,0 +1,30 @@
+[package]
+name = "modix"
+version = "0.1.0"
+edition = "2021"
+description = "CLI tool for managing and switching between Claude API backends and other LLMs"
+authors = ["Finn <promacanthus@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/promacanthus/modix"
+homepage = "https://github.com/promacanthus/modix"
+
+[dependencies]
+clap = { version = "4.0", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1.0", features = ["full"] }
+dirs-next = "2.0"
+anyhow = "1.0"
+thiserror = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+dirs = "6.0.0"
+
+[dev-dependencies]
+tempfile = "3.0"
+criterion = "0.5"
+
+[[bin]]
+name = "modix"
+path = "src/main.rs"
+
