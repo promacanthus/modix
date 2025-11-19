@@ -88,17 +88,24 @@ fn cmd_list() -> Result<(), Box<dyn std::error::Error>> {
     println!("Available models:");
     println!(
         "{:<30} {:<20} {:<15} {:<30}",
-        "NAME", "COMPANY", "VENDOR", "ENDPOINT"
+        "MODEL", "COMPANY", "VENDOR", "ENDPOINT"
     );
 
-    // Get all models and sort them by name for consistent output
+    // Get all models and sort them by vendor and model name for consistent output
     let mut models: Vec<_> = config.get_all_models();
-    models.sort_by(|a, b| a.0.cmp(b.0));
+    models.sort_by(|a, b| {
+        let vendor_cmp = a.0.cmp(&b.0);
+        if vendor_cmp == std::cmp::Ordering::Equal {
+            a.1.cmp(&b.1)
+        } else {
+            vendor_cmp
+        }
+    });
 
-    for (identifier, model) in models {
+    for (vendor, model_name, model_config) in models {
         println!(
             "{:<30} {:<20} {:<15} {:<30}",
-            identifier, model.company, model.vendor, model.api_endpoint
+            model_name, model_config.company, vendor, model_config.api_endpoint
         );
     }
 
@@ -108,31 +115,40 @@ fn cmd_list() -> Result<(), Box<dyn std::error::Error>> {
 fn cmd_switch(model_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut config = ConfigManager::load_config()?;
 
-    match config.set_current_model(model_name) {
-        Ok(()) => {
-            ConfigManager::save_config(&config)?;
+    // Find the model by searching all vendors for this model name
+    let all_models = config.get_all_models();
+    let mut found_vendor: Option<String> = None;
 
-            // Update Claude configuration based on the selected model
-            update_claude_config_for_model(model_name)?;
+    for (vendor, model, _) in all_models {
+        if model == model_name {
+            found_vendor = Some(vendor.clone());
+            break;
+        }
+    }
 
-            println!("Switched to model: {}", model_name);
-        }
-        Err(e) => {
-            return Err(format!("Failed to switch model: {}", e).into());
-        }
+    if let Some(vendor) = found_vendor {
+        config.set_current_vendor_and_model(&vendor, model_name)?;
+        ConfigManager::save_config(&config)?;
+
+        // Update Claude configuration based on the selected model
+        update_claude_config_for_model(model_name, &vendor)?;
+
+        println!("Switched to model: {}", model_name);
+    } else {
+        return Err(format!("Model '{}' not found in any vendor configuration", model_name).into());
     }
 
     Ok(())
 }
 
 /// Update Claude configuration based on the selected model
-fn update_claude_config_for_model(model_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+fn update_claude_config_for_model(model_name: &str, vendor: &str) -> Result<(), Box<dyn std::error::Error>> {
     // Load the current Modix configuration to get model details
     let config = ConfigManager::load_config()?;
 
     // Get the model configuration
-    let model_config = config.get_model(model_name)
-        .ok_or_else(|| format!("Model '{}' not found in configuration", model_name))?;
+    let model_config = config.get_model(vendor, model_name)
+        .ok_or_else(|| format!("Model '{}' not found in configuration for vendor '{}'", model_name, vendor))?;
 
     // Load existing Claude configuration
     let mut claude_config = ConfigManager::load_claude_config()?;
@@ -146,7 +162,7 @@ fn update_claude_config_for_model(model_name: &str) -> Result<(), Box<dyn std::e
 
     // Check if the model is Claude (case-insensitive check for various Claude model names)
     let is_claude_model = model_name.to_lowercase().contains("claude")
-        || model_config.vendor.to_lowercase() == "anthropic";
+        || vendor.to_lowercase() == "anthropic";
 
     if is_claude_model {
         // For Claude models, remove the env field to use official Claude API
@@ -182,10 +198,11 @@ fn update_claude_config_for_model(model_name: &str) -> Result<(), Box<dyn std::e
 fn cmd_status() -> Result<(), Box<dyn std::error::Error>> {
     let config = ConfigManager::load_config()?;
 
-    if let Some(current_model) = config.get_current_model() {
+    if let Some((_model_name, model_config)) = config.get_current_model() {
         println!("Current model: {}", config.current_model);
-        println!("Provider: {}", current_model.vendor);
-        println!("API Endpoint: {}", current_model.api_endpoint);
+        println!("Current vendor: {}", config.current_vendor);
+        println!("Company: {}", model_config.company);
+        println!("API Endpoint: {}", model_config.api_endpoint);
     } else {
         println!("No current model configured");
     }
@@ -202,25 +219,42 @@ fn cmd_add(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut config = ConfigManager::load_config()?;
 
-    // Check if model with the same name already exists
-    if config.get_model(model_name).is_some() {
-        return Err(format!(
-            "Model '{}' already exists. Please remove it first with: modix remove {}",
-            model_name, model_name
-        ).into());
+    // Check if this model name already exists in any vendor
+    let all_models = config.get_all_models();
+    for (_, existing_model, _) in &all_models {
+        if existing_model == model_name {
+            return Err(format!(
+                "Model '{}' already exists. Please use a different name or remove the existing one first.",
+                model_name
+            ).into());
+        }
     }
 
-    let model_config = ModelConfig {
-        vendor: vendor.to_string(),
-        company: company.to_string(),
-        api_endpoint: endpoint.to_string(),
-        api_key: api_key.to_string(),
-    };
+    // First try to add the model to an existing vendor
+    if config.add_model_to_vendor(vendor, model_name.to_string()).is_ok() {
+        // Update the API endpoint and key if they changed
+        if let Some(vendor_config) = config.get_vendor_mut(vendor) {
+            vendor_config.company = company.to_string();
+            vendor_config.api_endpoint = endpoint.to_string();
+            vendor_config.api_key = api_key.to_string();
+        }
+        ConfigManager::save_config(&config)?;
+        println!("Added model '{}' to existing vendor '{}'", model_name, vendor);
+    } else {
+        // If vendor doesn't exist, create a new vendor config
+        let model_config = ModelConfig {
+            company: company.to_string(),
+            api_endpoint: endpoint.to_string(),
+            api_key: api_key.to_string(),
+            models: vec![model_name.to_string()],
+        };
 
-    config.add_model(model_name.to_string(), model_config);
-    ConfigManager::save_config(&config)?;
+        config.add_vendor(vendor.to_string(), model_config);
+        ConfigManager::save_config(&config)?;
 
-    println!("Added model: {}", model_name);
+        println!("Created new vendor '{}' with model: {}", vendor, model_name);
+    }
+
     println!("Switch to it with: modix switch {}", model_name);
 
     Ok(())
@@ -229,18 +263,40 @@ fn cmd_add(
 fn cmd_remove(model_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut config = ConfigManager::load_config()?;
 
-    if config.get_model(model_name).is_none() {
+    // Find which vendor this model belongs to
+    let all_models = config.get_all_models();
+    let mut target_vendor: Option<String> = None;
+    for (vendor, model, _) in all_models {
+        if model == model_name {
+            target_vendor = Some(vendor.clone());
+            break;
+        }
+    }
+
+    if target_vendor.is_none() {
         return Err(format!("Model '{}' not found", model_name).into());
     }
 
-    config.remove_model(model_name);
+    let vendor = target_vendor.unwrap();
+
+    // Remove the model from the vendor
+    if let Some(vendor_config) = config.get_vendor_mut(&vendor) {
+        vendor_config.models.retain(|m| m != model_name);
+
+        // If the vendor has no more models, remove the vendor entirely
+        if vendor_config.models.is_empty() {
+            config.remove_vendor(&vendor);
+            println!("Vendor '{}' had no remaining models and was removed", vendor);
+        }
+    }
 
     // If we removed the current model, switch to default
     if config.current_model == model_name {
         config.current_model = config.default_model.clone();
+        config.current_vendor = config.default_vendor.clone();
         println!(
-            "Removed current model. Switched to default: {}",
-            config.default_model
+            "Removed current model. Switched to default: {}@{}",
+            config.default_model, config.default_vendor
         );
     }
 
@@ -315,28 +371,22 @@ mod tests {
         let temp_file = NamedTempFile::new().unwrap();
         let temp_path = temp_file.path();
 
-        // Write config with models in non-alphabetical order
+        // Write config with models in non-alphabetical order - using vendor structure
         let config_content = r#"{
+  "current_vendor": "test",
   "current_model": "Zeta-Model",
+  "default_vendor": "test",
   "default_model": "Alpha-Model",
-  "models": {
-    "Zeta-Model": {
-      "vendor": "Test",
+  "vendors": {
+    "test": {
       "company": "TestCorp",
-      "api_endpoint": "https://zeta.test.com",
-      "api_key": "zeta-key"
-    },
-    "Alpha-Model": {
-      "vendor": "Test",
-      "company": "TestCorp",
-      "api_endpoint": "https://alpha.test.com",
-      "api_key": "alpha-key"
-    },
-    "Beta-Model": {
-      "vendor": "Test",
-      "company": "TestCorp",
-      "api_endpoint": "https://beta.test.com",
-      "api_key": "beta-key"
+      "api_endpoint": "https://api.test.com",
+      "api_key": "test-key",
+      "models": [
+        "Zeta-Model",
+        "Alpha-Model",
+        "Beta-Model"
+      ]
     }
   },
   "config_version": "1.0.0"
@@ -349,11 +399,18 @@ mod tests {
 
         // Test that get_all_models returns models and we can sort them
         let mut models: Vec<_> = config.get_all_models();
-        models.sort_by(|a, b| a.0.cmp(b.0));
+        models.sort_by(|a, b| {
+            let vendor_cmp = a.0.cmp(&b.0);
+            if vendor_cmp == std::cmp::Ordering::Equal {
+                a.1.cmp(&b.1)
+            } else {
+                vendor_cmp
+            }
+        });
 
-        // Verify the models are sorted alphabetically by name
-        assert_eq!(models[0].0, &"Alpha-Model");
-        assert_eq!(models[1].0, &"Beta-Model");
-        assert_eq!(models[2].0, &"Zeta-Model");
+        // Verify the models are sorted alphabetically by vendor then model name
+        assert_eq!(models[0].1, "Alpha-Model");
+        assert_eq!(models[1].1, "Beta-Model");
+        assert_eq!(models[2].1, "Zeta-Model");
     }
 }

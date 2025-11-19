@@ -247,69 +247,80 @@ pub fn setup_default_models() -> ModixConfig {
 
     // Claude
     let claude_config = crate::config::ModelConfig {
-        vendor: "Anthropic".to_string(),
         company: "Anthropic".to_string(),
         api_endpoint: "".to_string(),
         api_key: "".to_string(),
+        models: vec!["Claude Code".to_string()],
     };
-    config.add_model("Claude".to_string(), claude_config);
+    config.add_vendor("anthropic".to_string(), claude_config);
 
-    // deepseek-reasoner
+    // DeepSeek
     let deepseek_config = crate::config::ModelConfig {
-        vendor: "DeepSeek-V3.2-Exp".to_string(),
         company: "DeepSeek".to_string(),
         api_endpoint: "https://api.deepseek.com/v1".to_string(),
         api_key: "".to_string(),
+        models: vec!["deepseek-reasoner".to_string(), "DeepSeek-V3.2-Exp".to_string()],
     };
-    config.add_model("deepseek-reasoner".to_string(), deepseek_config);
+    config.add_vendor("deepseek".to_string(), deepseek_config);
 
-    // qwen3-coder-plus
+    // Alibaba Qwen
     let qwen_config = crate::config::ModelConfig {
-        vendor: "DashScope".to_string(),
         company: "Alibaba".to_string(),
         api_endpoint: "https://dashscope.aliyuncs.com/compatible-mode/v1".to_string(),
         api_key: "".to_string(),
+        models: vec!["qwen3-coder-plus".to_string(), "qwen3-coder-32b".to_string()],
     };
-    config.add_model("qwen3-coder-plus".to_string(), qwen_config);
+    config.add_vendor("alibaba".to_string(), qwen_config);
 
-    // doubao-seed-code-preview-latest
+    // ByteDance Doubao
     let doubao_config = crate::config::ModelConfig {
-        vendor: "volcengine".to_string(),
         company: "ByteDance".to_string(),
         api_endpoint: "https://ark.cn-beijing.volces.com/api/coding".to_string(),
         api_key: "".to_string(),
+        models: vec!["doubao-seed-code-preview-latest".to_string()],
     };
-    config.add_model("doubao-seed-code-preview-latest".to_string(), doubao_config);
+    config.add_vendor("bytedance".to_string(), doubao_config);
 
-    // kimi-k2-thinking-turbo
+    // Moonshot AI - Kimi
     let kimi_config = crate::config::ModelConfig {
-        vendor: "Kimi-K2".to_string(),
         company: "Moonshot AI".to_string(),
         api_endpoint: "https://api.moonshot.cn/anthropic".to_string(),
         api_key: "".to_string(),
+        models: vec!["kimi-k2-thinking-turbo".to_string()],
     };
-    config.add_model("kimi-k2-thinking-turbo".to_string(), kimi_config);
+    config.add_vendor("moonshot".to_string(), kimi_config);
 
-    // KAT-Coder
+    // Kimi AI Technology - KAT-Coder
     let kat_config = crate::config::ModelConfig {
-        vendor: "StreamLake".to_string(),
         company: "Kimi AI Technology".to_string(),
-        api_endpoint: "https://wanqing.streamlakeapi.com/api/gateway/v1/endpoints/ep-xxx-xxx/claude-code-proxy".to_string(), 
-        api_key: "".to_string(),      
+        api_endpoint: "https://wanqing.streamlakeapi.com/api/gateway/v1/endpoints/ep-xxx-xxx/claude-code-proxy".to_string(),
+        api_key: "".to_string(),
+        models: vec!["KAT-Coder".to_string()],
     };
-    config.add_model("KAT-Coder".to_string(), kat_config);
+    config.add_vendor("kat".to_string(), kat_config);
 
-    // MiniMax-M2
+    // MiniMax
     let minimax_config = crate::config::ModelConfig {
-        vendor: "MiniMax".to_string(),
         company: "MiniMax".to_string(),
         api_endpoint: "https://api.minimaxi.com/anthropic".to_string(),
         api_key: "".to_string(),
+        models: vec!["MiniMax-M2".to_string()],
     };
-    config.add_model("MiniMax-M2".to_string(), minimax_config);
+    config.add_vendor("minimax".to_string(), minimax_config);
 
-    // Set current and default models to the first enabled model
+    // ZHIPU AI
+    let zhipu_config = crate::config::ModelConfig {
+        company: "ZHIPU AI".to_string(),
+        api_endpoint: "https://open.bigmodel.cn/api/anthropic".to_string(),
+        api_key: "".to_string(),
+        models: vec!["GLM-4.6".to_string()],
+    };
+    config.add_vendor("zhipu".to_string(), zhipu_config);
+
+    // Set current and default vendor/model to the first enabled model
+    config.current_vendor = "anthropic".to_string();
     config.current_model = "Claude Code".to_string();
+    config.default_vendor = "anthropic".to_string();
     config.default_model = "Claude Code".to_string();
 
     config
@@ -329,20 +340,17 @@ mod tests {
         // Ensure the temporary directory structure exists
         std::fs::create_dir_all(temp_config_path.parent().unwrap()).unwrap();
 
-        // Mock the config path function for this test
-        let _original_config_path = get_config_path();
-
         // Create a test that uses the temporary path
         let config_result = ConfigManager::load_config_from_path(&temp_config_path);
 
         match config_result {
             Ok(config) => {
-                assert_eq!(config.models.len(), 0);
+                assert_eq!(config.vendors.len(), 0);
             }
             Err(_) => {
                 // If file doesn't exist, it should return empty config
                 let empty_config = ModixConfig::new();
-                assert_eq!(empty_config.models.len(), 0);
+                assert_eq!(empty_config.vendors.len(), 0);
             }
         }
     }
@@ -353,14 +361,16 @@ mod tests {
         let temp_path = temp_file.path();
 
         let mut config = ModixConfig::new();
-        let model = crate::config::ModelConfig {
-            vendor: "test".to_string(),
+        let model_config = crate::config::ModelConfig {
             company: "TestCorp".to_string(),
             api_endpoint: "https://api.test.com".to_string(),
             api_key: "test-key".to_string(),
+            models: vec!["test-model".to_string()],
         };
-        config.add_model("test-model".to_string(), model);
+        config.add_vendor("test-vendor".to_string(), model_config);
+        config.current_vendor = "test-vendor".to_string();
         config.current_model = "test-model".to_string();
+        config.default_vendor = "test-vendor".to_string();
         config.default_model = "test-model".to_string();
 
         // Save config
@@ -369,20 +379,26 @@ mod tests {
         // Load config back
         let loaded_config = ConfigManager::load_config_from_path(temp_path).unwrap();
 
-        assert_eq!(config.models.len(), loaded_config.models.len());
-        assert!(loaded_config.get_model("test-model").is_some());
+        assert_eq!(config.vendors.len(), loaded_config.vendors.len());
+        assert!(loaded_config.get_vendor("test-vendor").is_some());
     }
 
     #[test]
     fn test_setup_default_models() {
         let config = setup_default_models();
-        assert_eq!(config.models.len(), 7);
-        assert!(config.get_model("Claude Code").is_some());
-        assert!(config.get_model("DeepSeek-V3.2-Exp").is_some());
-        assert!(config.get_model("Qwen3-Coder").is_some());
-        assert!(config.get_model("DouBao-Seed-Code").is_some());
-        assert!(config.get_model("Kimi-K2").is_some());
-        assert!(config.get_model("KAT-Coder").is_some());
-        assert!(config.get_model("MiniMax M2").is_some());
+        assert_eq!(config.vendors.len(), 8);
+        assert!(config.get_vendor("anthropic").is_some());
+        assert!(config.get_vendor("deepseek").is_some());
+        assert!(config.get_vendor("alibaba").is_some());
+        assert!(config.get_vendor("bytedance").is_some());
+        assert!(config.get_vendor("moonshot").is_some());
+        assert!(config.get_vendor("kat").is_some());
+        assert!(config.get_vendor("minimax").is_some());
+        assert!(config.get_vendor("zhipu").is_some());
+
+        // Verify models are present
+        assert!(config.get_model("anthropic", "Claude Code").is_some());
+        assert!(config.get_model("deepseek", "deepseek-reasoner").is_some());
+        assert!(config.get_model("alibaba", "qwen3-coder-plus").is_some());
     }
 }
