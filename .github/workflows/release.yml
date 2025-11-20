@@ -68,16 +68,12 @@ jobs:
           brew update
           brew install openssl@3
 
-      - name: Set up environment variables (Linux/macOS)
-        if: matrix.os != 'windows-latest'
+      - name: Set up build environment
         run: |
-          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-            echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
-            echo "OPENSSL_DIR=/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
-          elif [ "${{ matrix.os }}" = "macos-latest" ]; then
-            echo "OPENSSL_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
-            echo "PKG_CONFIG_PATH=$(brew --prefix openssl@3)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
-          fi
+          # Force rustls usage for all platforms - disable OpenSSL vendor
+          echo "OPENSSL_NO_VENDOR=1" >> $GITHUB_ENV
+          echo "CARGO_NET_OFFLINE=false" >> $GITHUB_ENV
+          echo "CARGO_BUILD_TARGET=${{ matrix.target }}" >> $GITHUB_ENV
 
       - name: Cache cargo registry
         uses: actions/cache@v4
