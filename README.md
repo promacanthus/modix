@@ -298,7 +298,7 @@ All commands provide **color-coded output** for enhanced readability:
 | `modix check claude-code` | Check Claude Code configuration  | `modix check claude-code`                                                             |
 | `modix check modix`       | Check Modix configuration health | `modix check modix`                                                                   |
 | `modix switch Claude`     | Switch to Claude Official API    | `modix switch "Claude"`                                                               |
-| `modix switch <model>`    | Switch to specified model        | `modix switch "DeepSeek-V3.2-Exp"`                                                    |
+| `modix switch <model>`    | Switch to specified model        | `modix switch "deepseek-reasoner"`                                                    |
 | `modix status`            | Show current model status        | `modix status`                                                                        |
 | `modix add <name>`        | Add new model                    | `modix add my-model --vendor custom --endpoint https://api.example.com -k my-api-key` |
 | `modix remove <name>`     | Remove model                     | `modix remove my-model`                                                               |
@@ -412,6 +412,31 @@ We welcome contributions! This project is currently in active development.
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
+
+## CI/CD
+
+This project uses GitHub Actions for automated builds and releases:
+
+- **Automatic builds**: When code is pushed to the `main` branch, binaries are automatically built for all supported platforms
+- **Cross-platform support**: Linux x86_64, macOS x86_64, macOS ARM64, and Windows x86_64
+- **Automatic releases**: New GitHub releases are created with all platform binaries
+- **Testing**: All builds include running the complete test suite
+
+### Build Status
+
+[![Release](https://github.com/promacanthus/modix/actions/workflows/release.yml/badge.svg)](https://github.com/promacanthus/modix/actions/workflows/release.yml)
+
+### Download Binaries
+
+Pre-built binaries are automatically generated and uploaded to [GitHub Releases](https://github.com/promacanthus/modix/releases) for each commit to `main`.
+
+### Manual Trigger
+
+You can manually trigger a build and release by going to the [Actions tab](https://github.com/promacanthus/modix/actions) and clicking "Run workflow" on the Release workflow.
+
+### Configuration
+
+See [CI/CD Guide](./CI_CD_GUIDE.md) for detailed information about the CI/CD configuration and usage.
 
 ## Getting Help
 

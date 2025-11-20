@@ -1,0 +1,190 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allow manual triggering
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          # Linux x86_64
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            archive: tar
+            archive_format: tar.gz
+            executable: modix
+
+          # macOS x86_64
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            archive: tar
+            archive_format: tar.gz
+            executable: modix
+
+          # macOS ARM64
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            archive: tar
+            archive_format: tar.gz
+            executable: modix
+
+          # Windows x86_64
+          - target: x86_64-pc-windows-gnu
+            os: windows-latest
+            archive: zip
+            archive_format: zip
+            executable: modix.exe
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/release/.cargo-lock
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --target ${{ matrix.target }}
+          use-cross: ${{ matrix.os != runner.os }}
+
+      - name: Run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --target ${{ matrix.target }}
+          use-cross: ${{ matrix.os != runner.os }}
+
+      - name: Package binary
+        run: |
+          cd target/${{ matrix.target }}/release
+
+          # Create archive with proper structure and README
+          mkdir -p modix-${{ matrix.target }}
+          cp ${{ matrix.executable }} modix-${{ matrix.target }}/
+
+          # Create README for the release
+          cat > modix-${{ matrix.target }}/README.md << 'EOF'
+          # Modix CLI Tool
+
+          A CLI tool for managing and switching between Claude API backends and other LLMs.
+
+          ## Usage
+
+          \`\`\`bash
+          ./${{ matrix.executable }} --help
+          \`\`\`
+
+          ## Commands
+
+          - \`modix list\` - List configured models
+          - \`modix switch <model_name>\` - Switch current model
+          - \`modix status\` - Show current model
+
+          ## Website
+
+          https://github.com/promacanthus/modix
+          EOF
+
+          # Create archive
+          if [ "${{ matrix.archive }}" = "tar" ]; then
+            tar -czf modix-${{ matrix.target }}.${{ matrix.archive_format }} modix-${{ matrix.target }}
+          else
+            7z a modix-${{ matrix.target }}.${{ matrix.archive_format }} modix-${{ matrix.target }}
+          fi
+
+          # Move to artifacts directory
+          mkdir -p ../../artifacts
+          mv modix-${{ matrix.target }}.${{ matrix.archive_format }} ../../artifacts/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: modix-${{ matrix.target }}
+          path: target/artifacts/modix-${{ matrix.target }}.*
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create version
+        id: version
+        run: |
+          VERSION="v$(date +'%Y%m%d')-${{ github.run_number }}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: false
+          body: |
+            # Modix Release ${{ steps.version.outputs.version }}
+
+            A CLI tool for managing and switching between Claude API backends and other LLMs.
+
+            ## Platforms
+
+            - **Linux x86_64**: `modix-x86_64-unknown-linux-gnu.tar.gz`
+            - **macOS x86_64**: `modix-x86_64-apple-darwin.tar.gz`
+            - **macOS ARM64**: `modix-aarch64-apple-darwin.tar.gz`
+            - **Windows x86_64**: `modix-x86_64-pc-windows-gnu.zip`
+
+            ## Installation
+
+            Download the appropriate binary for your platform and extract it. Make the binary executable (for Unix-like systems) and place it in your PATH.
+
+            ## Usage
+
+            \`\`\`bash
+            modix --help
+            modix list
+            modix switch <model_name>
+            modix status
+            \`\`\`
+
+            ## Changelog
+
+            This release was automatically generated from commit ${{ github.sha }}.
+
+          files: |
+            modix-x86_64-unknown-linux-gnu/modix-x86_64-unknown-linux-gnu.tar.gz
+            modix-x86_64-apple-darwin/modix-x86_64-apple-darwin.tar.gz
+            modix-aarch64-apple-darwin/modix-aarch64-apple-darwin.tar.gz
+            modix-x86_64-pc-windows-gnu/modix-x86_64-pc-windows-gnu.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
