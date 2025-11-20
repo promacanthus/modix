@@ -86,19 +86,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
+      - name: Install cross (for cross-compilation)
+        if: matrix.os != runner.os
+        uses: taiki-e/install-cross-action@v0.3
+
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --target ${{ matrix.target }}
-          use-cross: ${{ matrix.os != runner.os }}
+        run: |
+          if [ "${{ matrix.os }}" != "${{ runner.os }}" ]; then
+            # Use cross for cross-compilation
+            cross build --release --target ${{ matrix.target }}
+          else
+            # Use regular cargo for native builds
+            cargo build --release --target ${{ matrix.target }}
+          fi
 
       - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --target ${{ matrix.target }}
-          use-cross: ${{ matrix.os != runner.os }}
+        run: |
+          if [ "${{ matrix.os }}" != "${{ runner.os }}" ]; then
+            # Use cross for cross-compilation tests
+            cross test --target ${{ matrix.target }}
+          else
+            # Use regular cargo for native tests
+            cargo test --target ${{ matrix.target }}
+          fi
 
       - name: Package binary
         run: |
