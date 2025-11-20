@@ -40,9 +40,9 @@ impl Default for ModixConfig {
     fn default() -> Self {
         Self {
             current_vendor: "anthropic".to_string(),
-            current_model: "Claude Code".to_string(),
+            current_model: "Claude".to_string(),
             default_vendor: "anthropic".to_string(),
-            default_model: "Claude Code".to_string(),
+            default_model: "Claude".to_string(),
             vendors: HashMap::new(),
             config_version: "1.0.0".to_string(),
             created_at: None,
@@ -81,7 +81,9 @@ impl ModixConfig {
 
     /// Get a model configuration by vendor and model name
     pub fn get_model(&self, vendor: &str, model_name: &str) -> Option<&ModelConfig> {
-        self.vendors.get(vendor).filter(|config| config.models.contains(&model_name.to_string()))
+        self.vendors
+            .get(vendor)
+            .filter(|config| config.models.contains(&model_name.to_string()))
     }
 
     /// Get a vendor configuration
@@ -95,14 +97,21 @@ impl ModixConfig {
     }
 
     /// Set the current active vendor and model
-    pub fn set_current_vendor_and_model(&mut self, vendor: &str, model_name: &str) -> Result<(), String> {
+    pub fn set_current_vendor_and_model(
+        &mut self,
+        vendor: &str,
+        model_name: &str,
+    ) -> Result<(), String> {
         if let Some(config) = self.vendors.get(vendor) {
             if config.models.contains(&model_name.to_string()) {
                 self.current_vendor = vendor.to_string();
                 self.current_model = model_name.to_string();
                 Ok(())
             } else {
-                Err(format!("Model '{}' not found for vendor '{}'", model_name, vendor))
+                Err(format!(
+                    "Model '{}' not found for vendor '{}'",
+                    model_name, vendor
+                ))
             }
         } else {
             Err(format!("Vendor '{}' not found in configuration", vendor))
@@ -111,7 +120,9 @@ impl ModixConfig {
 
     /// Get the current active vendor and model configuration
     pub fn get_current_model(&self) -> Option<(&String, &ModelConfig)> {
-        self.vendors.get(&self.current_vendor).map(|config| (&self.current_model, config))
+        self.vendors
+            .get(&self.current_vendor)
+            .map(|config| (&self.current_model, config))
     }
 
     /// Get the current vendor configuration
@@ -129,7 +140,10 @@ impl ModixConfig {
         self.vendors
             .iter()
             .flat_map(|(vendor, config)| {
-                config.models.iter().map(move |model_name| (vendor.clone(), model_name.clone(), config))
+                config
+                    .models
+                    .iter()
+                    .map(move |model_name| (vendor.clone(), model_name.clone(), config))
             })
             .collect()
     }
@@ -242,7 +256,9 @@ mod tests {
         };
 
         config.add_vendor("test-vendor".to_string(), model_config);
-        assert!(config.add_model_to_vendor("test-vendor", "test-model".to_string()).is_ok());
+        assert!(config
+            .add_model_to_vendor("test-vendor", "test-model".to_string())
+            .is_ok());
         assert_eq!(config.vendors.get("test-vendor").unwrap().models.len(), 1);
     }
 
@@ -257,7 +273,9 @@ mod tests {
         };
 
         config.add_vendor("test-vendor".to_string(), model_config);
-        assert!(config.set_current_vendor_and_model("test-vendor", "test-model").is_ok());
+        assert!(config
+            .set_current_vendor_and_model("test-vendor", "test-model")
+            .is_ok());
         assert_eq!(config.current_vendor, "test-vendor");
         assert_eq!(config.current_model, "test-model");
     }
@@ -265,7 +283,9 @@ mod tests {
     #[test]
     fn test_set_current_vendor_and_model_invalid() {
         let mut config = ModixConfig::new();
-        assert!(config.set_current_vendor_and_model("nonexistent", "model").is_err());
+        assert!(config
+            .set_current_vendor_and_model("nonexistent", "model")
+            .is_err());
     }
 
     #[test]
@@ -291,7 +311,10 @@ mod tests {
         assert_eq!(all_models.len(), 3);
 
         // Check that all models are present without depending on order
-        let model_keys: std::collections::HashSet<_> = all_models.iter().map(|(vendor, model, _)| format!("{}:{}", vendor, model)).collect();
+        let model_keys: std::collections::HashSet<_> = all_models
+            .iter()
+            .map(|(vendor, model, _)| format!("{}:{}", vendor, model))
+            .collect();
         assert!(model_keys.contains("vendor1:model-1"));
         assert!(model_keys.contains("vendor1:model-2"));
         assert!(model_keys.contains("vendor2:model-3"));

@@ -245,12 +245,12 @@ impl ConfigManager {
 pub fn setup_default_models() -> ModixConfig {
     let mut config = ModixConfig::new();
 
-    // Claude
+    // Anthropic
     let claude_config = crate::config::ModelConfig {
         company: "Anthropic".to_string(),
         api_endpoint: "".to_string(),
         api_key: "".to_string(),
-        models: vec!["Claude Code".to_string()],
+        models: vec!["Claude".to_string()],
     };
     config.add_vendor("anthropic".to_string(), claude_config);
 
@@ -259,29 +259,32 @@ pub fn setup_default_models() -> ModixConfig {
         company: "DeepSeek".to_string(),
         api_endpoint: "https://api.deepseek.com/v1".to_string(),
         api_key: "".to_string(),
-        models: vec!["deepseek-reasoner".to_string(), "DeepSeek-V3.2-Exp".to_string()],
+        models: vec!["deepseek-reasoner".to_string(), "deepseek-chat".to_string()],
     };
     config.add_vendor("deepseek".to_string(), deepseek_config);
 
-    // Alibaba Qwen
+    // Alibaba
     let qwen_config = crate::config::ModelConfig {
         company: "Alibaba".to_string(),
         api_endpoint: "https://dashscope.aliyuncs.com/compatible-mode/v1".to_string(),
         api_key: "".to_string(),
-        models: vec!["qwen3-coder-plus".to_string(), "qwen3-coder-32b".to_string()],
+        models: vec![
+            "qwen3-coder-plus".to_string(),
+            "qwen3-coder-flash".to_string(),
+        ],
     };
-    config.add_vendor("alibaba".to_string(), qwen_config);
+    config.add_vendor("bailian".to_string(), qwen_config);
 
-    // ByteDance Doubao
+    // ByteDance
     let doubao_config = crate::config::ModelConfig {
         company: "ByteDance".to_string(),
         api_endpoint: "https://ark.cn-beijing.volces.com/api/coding".to_string(),
         api_key: "".to_string(),
         models: vec!["doubao-seed-code-preview-latest".to_string()],
     };
-    config.add_vendor("bytedance".to_string(), doubao_config);
+    config.add_vendor("volcengine".to_string(), doubao_config);
 
-    // Moonshot AI - Kimi
+    // Moonshot AI
     let kimi_config = crate::config::ModelConfig {
         company: "Moonshot AI".to_string(),
         api_endpoint: "https://api.moonshot.cn/anthropic".to_string(),
@@ -290,14 +293,14 @@ pub fn setup_default_models() -> ModixConfig {
     };
     config.add_vendor("moonshot".to_string(), kimi_config);
 
-    // Kimi AI Technology - KAT-Coder
+    // KuaiShou
     let kat_config = crate::config::ModelConfig {
-        company: "Kimi AI Technology".to_string(),
+        company: "Kuaishou".to_string(),
         api_endpoint: "https://wanqing.streamlakeapi.com/api/gateway/v1/endpoints/ep-xxx-xxx/claude-code-proxy".to_string(),
         api_key: "".to_string(),
         models: vec!["KAT-Coder".to_string()],
     };
-    config.add_vendor("kat".to_string(), kat_config);
+    config.add_vendor("streamlake".to_string(), kat_config);
 
     // MiniMax
     let minimax_config = crate::config::ModelConfig {
@@ -315,13 +318,13 @@ pub fn setup_default_models() -> ModixConfig {
         api_key: "".to_string(),
         models: vec!["GLM-4.6".to_string()],
     };
-    config.add_vendor("zhipu".to_string(), zhipu_config);
+    config.add_vendor("bigmodel".to_string(), zhipu_config);
 
     // Set current and default vendor/model to the first enabled model
     config.current_vendor = "anthropic".to_string();
-    config.current_model = "Claude Code".to_string();
+    config.current_model = "Claude".to_string();
     config.default_vendor = "anthropic".to_string();
-    config.default_model = "Claude Code".to_string();
+    config.default_model = "Claude".to_string();
 
     config
 }
@@ -397,7 +400,7 @@ mod tests {
         assert!(config.get_vendor("zhipu").is_some());
 
         // Verify models are present
-        assert!(config.get_model("anthropic", "Claude Code").is_some());
+        assert!(config.get_model("anthropic", "Claude").is_some());
         assert!(config.get_model("deepseek", "deepseek-reasoner").is_some());
         assert!(config.get_model("alibaba", "qwen3-coder-plus").is_some());
     }
