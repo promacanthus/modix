@@ -392,16 +392,16 @@ mod tests {
         assert_eq!(config.vendors.len(), 8);
         assert!(config.get_vendor("anthropic").is_some());
         assert!(config.get_vendor("deepseek").is_some());
-        assert!(config.get_vendor("alibaba").is_some());
-        assert!(config.get_vendor("bytedance").is_some());
+        assert!(config.get_vendor("bailian").is_some());
+        assert!(config.get_vendor("volcengine").is_some());
         assert!(config.get_vendor("moonshot").is_some());
-        assert!(config.get_vendor("kat").is_some());
+        assert!(config.get_vendor("streamlake").is_some());
         assert!(config.get_vendor("minimax").is_some());
-        assert!(config.get_vendor("zhipu").is_some());
+        assert!(config.get_vendor("bigmodel").is_some());
 
         // Verify models are present
         assert!(config.get_model("anthropic", "Claude").is_some());
         assert!(config.get_model("deepseek", "deepseek-reasoner").is_some());
-        assert!(config.get_model("alibaba", "qwen3-coder-plus").is_some());
+        assert!(config.get_model("bailian", "qwen3-coder-plus").is_some());
     }
 }
