@@ -2,6 +2,28 @@
 
 A Rust-based CLI tool for managing and switching between Claude API backends and other large language models.
 
+## 📁 Project Structure
+
+```
+modix/
+├── Cargo.toml              # Rust CLI tool configuration
+├── src/                    # Rust source code (modix CLI tool)
+│   ├── main.rs
+│   ├── config.rs
+│   └── config_manager.rs
+├── docs/                   # Astro documentation website
+│   ├── package.json        # Astro project configuration
+│   ├── astro.config.mjs
+│   └── src/
+│       ├── content/        # Documentation content
+│       └── assets/
+└── README.md               # Project documentation
+```
+
+This is a **monorepo** containing:
+- **Rust CLI tool** (`src/`) - The main `modix` command-line tool
+- **Documentation website** (`docs/`) - Astro-based documentation site with multi-language support
+
 ## Overview
 
 Modix is designed to simplify the management of multiple LLM backends by providing a unified configuration system and command-line interface. Inspired by Claude's system in `~/.claude/settings.json`, Modix extends this concept to support multiple providers including Claude Official API, DeepSeek, Alibaba Qwen, and ByteDance Doubao.
