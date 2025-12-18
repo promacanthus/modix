@@ -1,0 +1,70 @@
+---
+title: "DeepSeek"
+description: ""
+---
+
+## DeepSeek
+
+### Overview
+
+DeepSeek offers advanced AI models with high performance and competitive pricing.
+
+### Getting API Access
+
+#### 1. Sign Up
+
+- Visit the [DeepSeek Console](https://platform.deepseek.com/)
+- Create an account if you don't have one
+- Complete the registration process
+
+#### 2. Obtain API Key
+
+- Log in to your DeepSeek account
+- Navigate to the API Keys section
+- Create a new API key
+- Copy the key securely
+
+### Configuration
+
+#### Environment Variables
+
+```bash
+export DEEPSEEK_API_KEY="your-api-key-here"
+```
+
+#### Modix Configuration
+
+```json
+{
+  "vendor": "deepseek",
+  "api_endpoint": "https://api.deepseek.com/v1",
+  "api_key": "your-deepseek-api-key",
+  "models": [
+    "deepseek-reasoner",
+    "deepseek-chat"
+  ]
+}
+```
+
+### Model Details
+
+| Model | Description | Pricing |
+|-------|-------------|---------|
+| `deepseek-reasoner` | Advanced reasoning model | Check website |
+| `deepseek-chat` | General conversation model | Check website |
+
+### Usage Examples
+
+```bash
+# Set API key environment variable
+export DEEPSEEK_API_KEY="your-api-key"
+
+# Use with Modix
+modix switch deepseek-reasoner
+```
+
+### Rate Limits and Quotas
+
+- Check the DeepSeek console for current rate limits
+- Monitor usage through the dashboard
+- Contact support for higher limits if needed

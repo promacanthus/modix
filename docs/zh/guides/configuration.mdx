@@ -1,0 +1,99 @@
+---
+"title": "配置文件"
+"description": "配置文件的详细说明"
+---
+
+## 配置文件详细信息
+
+Modix 将其配置存储在 `~/.modix/settings.json`（或 Windows 上的 `%APPDATA%\modix\settings.json`）中。
+
+### 配置结构
+
+配置文件使用嵌套结构按提供商组织模型：
+
+```json
+{
+  "current_vendor": "anthropic",
+  "current_model": "Claude",
+  "default_vendor": "anthropic",
+  "default_model": "Claude",
+  "vendors": {
+    "anthropic": {
+      "company": "Anthropic",
+      "api_endpoint": "",
+      "api_key": "",
+      "models": [
+        "Claude"
+      ]
+    },
+    "deepseek": {
+      "company": "DeepSeek",
+      "api_endpoint": "https://api.deepseek.com/v1",
+      "api_key": "your-deepseek-api-key",
+      "models": [
+        "deepseek-reasoner",
+        "deepseek-chat"
+      ]
+    },
+    "bailian": {
+      "company": "Alibaba",
+      "api_endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "api_key": "your-qwen-api-key",
+      "models": [
+        "qwen3-coder-plus",
+        "qwen3-coder-flash"
+      ]
+    },
+    "volcengine": {
+      "company": "ByteDance",
+      "api_endpoint": "https://ark.cn-beijing.volces.com/api/coding",
+      "api_key": "your-doubao-api-key",
+      "models": [
+        "doubao-seed-code-preview-latest"
+      ]
+    },
+    "moonshot": {
+      "company": "Moonshot AI",
+      "api_endpoint": "https://api.moonshot.cn/anthropic",
+      "api_key": "your-kimi-api-key",
+      "models": [
+        "kimi-k2-thinking-turbo"
+      ]
+    },
+    "streamlake": {
+      "company": "Kuaishou",
+      "api_endpoint": "https://wanqing.streamlakeapi.com/api/gateway/v1/endpoints/ep-xxx-xxx/claude-code-proxy",
+      "api_key": "your-kat-api-key",
+      "models": [
+        "KAT-Coder"
+      ]
+    },
+    "minimax": {
+      "company": "MiniMax",
+      "api_endpoint": "https://api.minimaxi.com/anthropic",
+      "api_key": "your-minimax-api-key",
+      "models": [
+        "MiniMax-M2"
+      ]
+    },
+    "bigmodel": {
+      "company": "ZHIPU AI",
+      "api_endpoint": "https://open.bigmodel.cn/api/anthropic",
+      "api_key": "your-zhipu-api-key",
+      "models": [
+        "GLM-4.6"
+      ]
+    }
+  },
+  "config_version": "1.0.0",
+  "created_at": "2025-11-17T00:00:00Z",
+  "updated_at": "2025-11-20T00:00:00Z"
+}
+```
+
+关键变化：
+
+- **基于提供商的组织**: 模型现在按提供商在 `vendors` 对象中分组
+- **基于数组的模型**: 每个提供商都有一个 `models` 数组，包含所有模型名称
+- **共享凭据**: API 端点和密钥在提供商的所有模型之间共享
+- **当前/默认跟踪**: 跟踪当前和默认选择的提供商和模型

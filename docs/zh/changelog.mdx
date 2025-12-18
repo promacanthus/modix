@@ -1,0 +1,194 @@
+---
+title: "变更日志"
+description: "Modix CLI 工具的发布说明和变更日志"
+icon: "history"
+---
+
+本文档记录了 Modix CLI 工具的所有显著变更。每个新版本都包含变更摘要。
+
+<Update type="added" label="2025-12-17" description="0.1.0">
+**多供应商 LLM 支持**: 添加了对多个 AI 模型供应商的支持，包括 DeepSeek、Alibaba (Bailian)、ByteDance (VolcEngine) 和 Anthropic
+</Update>
+
+<Update type="added" label="2025-12-17" description="0.1.0">
+**完整的 CLI 界面**: 实现了完整的命令行界面，包含 10 个子命令：
+- `modix init` - 初始化默认配置
+- `modix list` - 列出所有配置的模型并显示状态指示器
+- `modix switch` - 在不同模型之间切换
+- `modix status` - 显示当前模型状态
+- `modix add` - 添加新的模型配置
+- `modix remove` - 删除模型配置
+- `modix show` - 显示供应商详细信息，包括 API 密钥
+- `modix update` - 更新现有供应商配置
+- `modix check` - 检查各种开发工具的配置
+- `modix path` - 显示配置文件路径
+</Update>
+
+<Update type="added" label="2025-12-17" description="0.1.0">
+**配置管理**: 使用基于 JSON 的设置完成配置系统，存储在 `~/.modix/settings.json` 中
+</Update>
+
+<Update type="added" label="2025-12-17" description="0.1.0">
+**Claude Code 集成**: 根据所选模型自动更新 Claude Code 配置
+</Update>
+
+<Update type="added" label="2025-12-17" description="0.1.0">
+**基于供应商的组织**: 模型现在按供应商组织，支持每个供应商的多个模型
+</Update>
+
+<Update type="added" label="2025-12-17" description="0.1.0">
+**状态指示器**: API 端点和 API 密钥的视觉状态指示器：
+- `[ Y ]` - 配置存在（绿色）
+- `[ N ]` - 配置缺失（红色）
+- `[ - ]` - 不适用 - 在 Claude Code 中预配置（蓝色）
+</Update>
+
+<Update type="added" label="2025-12-17" description="0.1.0">
+**模型健康检查**: 配置的全面健康检查系统
+</Update>
+
+<Update type="added" label="2025-12-17" description="0.1.0">
+**跨平台支持**: 完全支持 Windows、macOS 和 Linux，具有适当的路径处理
+</Update>
+
+<Update type="changed" label="2025-12-17" description="0.1.0">
+**架构重构**: 从初始设计完全重写为生产就绪的实现
+</Update>
+
+<Update type="changed" label="2025-12-17" description="0.1.0">
+**配置结构**: 从单个模型列表迁移到基于供应商的配置系统
+</Update>
+
+<Update type="changed" label="2025-12-17" description="0.1.0">
+**错误处理**: 增强错误处理，提供详细的错误消息和用户友好的反馈
+</Update>
+
+<Update type="changed" label="2025-12-17" description="0.1.0">
+**输出格式**: 使用颜色编码和结构化表格改进 CLI 输出
+</Update>
+
+<Update type="fixed" label="2025-12-17" description="0.1.0">
+**供应商管理**: 修复供应商创建和模型管理的问题
+</Update>
+
+<Update type="fixed" label="2025-12-17" description="0.1.0">
+**配置验证**: 为配置文件添加适当的验证
+</Update>
+
+<Update type="fixed" label="2025-12-17" description="0.1.0">
+**模型切换**: 解决模型切换和 Claude Code 集成的问题
+</Update>
+
+<Update type="added" label="2025-11-20" description="0.0.9">
+**初始项目结构**: 创建基本的 Rust 项目结构，具有适当的模块组织
+</Update>
+
+<Update type="added" label="2025-11-20" description="0.0.9">
+**配置管理**: 用于管理模型设置的基本配置系统
+</Update>
+
+<Update type="added" label="2025-11-20" description="0.0.9">
+**文档框架**: 全面的文档结构，包括：
+- 产品需求规范
+- 技术架构文档
+- 用户指南和开发者文档
+</Update>
+
+<Update type="added" label="2025-11-20" description="0.0.9">
+**CI/CD 管道**: 用于自动化构建、测试和跨平台发布的 GitHub Actions 工作流
+</Update>
+
+<Update type="added" label="2025-11-20" description="0.0.9">
+**多平台构建支持**: 在 Linux、Windows 和 macOS 上使用各种架构进行构建的配置
+</Update>
+
+<Update type="changed" label="2025-11-20" description="0.0.9">
+**项目规划**: 记录全面的产品需求和技术规范
+</Update>
+
+<Update type="changed" label="2025-11-20" description="0.0.9">
+**开发工作流**: 建立开发实践，使用 Cargo.toml 配置和适当的 Rust 项目结构
+</Update>
+
+<Update type="fixed" label="2025-11-20" description="0.0.9">
+**文档结构**: 为项目组织全面的文档
+</Update>
+
+<Update type="added" label="2025-11-17" description="0.0.1">
+**项目初始化**: 初始项目设置和结构
+</Update>
+
+<Update type="added" label="2025-11-17" description="0.0.1">
+**基本配置**: 使用基于 JSON 的设置的简单配置系统
+</Update>
+
+<Update type="added" label="2025-11-17" description="0.0.1">
+**命令行界面**: 具有 `list`、`switch` 和 `status` 命令的基本 CLI 结构
+</Update>
+
+<Update type="added" label="2025-11-17" description="0.0.1">
+**配置管理**: 简单的基于文件的配置管理
+</Update>
+
+<Update type="added" label="2025-11-17" description="0.0.1">
+**模型切换**: 在不同模型之间切换的基本功能
+</Update>
+
+<Update type="changed" label="2025-11-17" description="0.0.1">
+**初始设计**: 具有最少依赖项的基本项目架构
+</Update>
+
+<Update type="changed" label="2025-11-17" description="0.0.1">
+**配置格式**: 用于模型管理的简单 JSON 配置
+</Update>
+
+---
+
+## 版本控制
+
+该项目遵循 [语义化版本控制](https://semver.org/) 指南：
+
+- **主版本号**: 不向后兼容的破坏性变更
+- **次版本号**: 向后兼容的新功能
+- **修订号**: 错误修复和小幅改进
+
+## 变更日志格式
+
+此变更日志遵循 [Keep a Changelog](https://keepachangelog.com/) 格式，包括：
+
+- **新增**: 新功能和功能
+- **变更**: 对现有功能的修改
+- **废弃**: 将在未来版本中删除的功能
+- **移除**: 已删除的功能
+- **修复**: 错误修复和改进
+- **安全**: 与安全相关的变更
+
+## 发布流程
+
+1. 所有变更都在此变更日志中跟踪
+2. 版本号遵循语义化版本控制
+3. 发布在 Git 中使用版本号标记
+4. 发布说明从此变更日志生成
+
+## 为变更日志做贡献
+
+贡献变更时：
+
+1. 将条目添加到适当的章节（新增、变更、修复等）
+2. 使用清晰、描述性的语言
+3. 将相关变更分组
+4. 在相关时包含指向问题、拉取请求或文档的链接
+5. 创建新发布时更新版本号和日期
+
+## 向后兼容性
+
+该项目旨在保持向后兼容性：
+
+- **配置文件**: 现有配置文件应与新版本一起使用
+- **CLI 界面**: 命令行界面的变更将最小化并记录
+- **API 变更**: 任何破坏性变更将在发布说明中明确记录
+- **迁移指南**: 在需要时为破坏性变更提供迁移指南
+
+## 安全说明
+
+安全相关变更在变更日志中记录，详细信息适当，同时保持安全最佳实践。有关安全漏洞报告，请使用 GitHub Issues 跟踪器。

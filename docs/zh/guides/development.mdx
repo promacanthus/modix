@@ -1,0 +1,59 @@
+---
+title: '开发指南'
+description: '在本地预览更改以更新您的文档'
+---
+
+<Info>
+  **先决条件**:
+  - 安装 Rust 开发环境。
+</Info>
+
+按照以下步骤在您的操作系统上安装和运行 Modix。
+
+## 开发
+
+### 项目结构
+
+```bash
+src/
+├── main.rs           # CLI 入口点
+├── lib.rs            # 库导出
+├── config.rs         # 配置数据结构
+└── config_manager.rs # 配置管理逻辑
+```
+
+### 构建
+
+```bash
+cargo build
+```
+
+### 运行测试
+
+```bash
+cargo test
+```
+
+### 使用参数运行
+
+```bash
+cargo run -- list
+cargo run -- switch claude
+```
+
+### 代码格式化
+
+```bash
+cargo fmt
+```
+
+### 代码检查
+
+```bash
+cargo clippy
+```
+
+## 未来计划
+
+- 增加对 Open AI Codex 和 Google Gemini Cli 的支持。
+- 增加新模型的支持，如 Xiaomi MIMO 等。

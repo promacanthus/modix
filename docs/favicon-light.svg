@@ -1,0 +1,11 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- 六边形 -->
+  <polygon points="32,4 56,18 56,46 32,60 8,46 8,18" stroke="#1f2328" stroke-width="4" fill="none"></polygon>
+
+  <!-- > -->
+  <path d="M26,22 L36,32 L26,42" stroke="#1f2328" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+
+  <!-- _ -->
+  <line x1="38" y1="42" x2="48" y2="42" stroke="#1f2328" stroke-width="4" stroke-linecap="round"></line>
+</svg>

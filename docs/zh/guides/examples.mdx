@@ -1,0 +1,280 @@
+---
+title: "子命令"
+description: "Modix CLI 工具的命令行参考和使用示例"
+---
+
+## 开始使用
+
+### 初始化配置
+
+```bash
+modix init
+```
+
+初始化配置文件。此命令在 `~/.modix/settings.json`（或 Windows 上的 `%APPDATA%\modix\settings.json`）创建带有预定义模型的默认配置。
+
+```bash
+$ modix init
+已初始化默认配置：/Users/username/.modix/settings.json
+编辑配置文件以添加您的 API 密钥并启用模型
+使用 'modix list' 查看可用模型
+```
+
+## 基本命令
+
+### 列出已配置的模型
+
+```bash
+modix list
+```
+
+显示所有已配置的模型，包括名称、提供商和 API 端点状态。输出格式为清晰的表格：
+
+```bash
+$ modix list
+MODEL                          COMPANY         VENDOR          ENDPOINT     API_KEY
+----------------------------------------------------------------------------------------------
+Claude                         Anthropic       Anthropic       [ - ]        [ - ]
+deepseek-reasoner              DeepSeek        deepseek        [ Y ]        [ N ]
+qwen3-coder-plus               Alibaba         bailian         [ Y ]        [ Y ]
+doubao-seed-code               ByteDance       volcengine      [ Y ]        [ N ]
+
+--- Summary ---
+总模型数: 4
+已配置模型数: 2
+当前模型: Claude
+```
+
+**状态图例**:
+
+- **[ Y ]** - 配置存在（绿色）
+- **[ N ]** - 配置缺失（红色）
+- **[ - ]** - 不适用 - 在 Claude Code 中预配置（蓝色）
+
+### 切换当前模型
+
+```bash
+modix switch <model_name>
+```
+
+将当前模型切换到指定的模型。该命令同时更新 Modix 配置和 Claude Code 设置。
+
+```bash
+$ modix switch deepseek-reasoner
+已切换到模型: deepseek-reasoner
+已更新 Claude Code 配置以使用 DeepSeek API
+```
+
+### 显示当前模型状态
+
+```bash
+modix status
+```
+
+显示当前模型及其配置状态：
+
+```bash
+$ modix status
+当前模型: deepseek-reasoner
+提供商: deepseek
+端点: https://api.deepseek.com/v1
+API 密钥: 已配置
+Claude Code 集成: 已启用
+```
+
+### 显示模型详细信息
+
+```bash
+modix show <model_name>
+```
+
+显示特定模型的详细信息，包括（如果配置了）API 密钥：
+
+```bash
+$ modix show deepseek-reasoner
+模型: deepseek-reasoner
+提供商: deepseek
+公司: DeepSeek
+端点: https://api.deepseek.com/v1
+API 密钥: sk-***********************
+```
+
+### 添加新模型
+
+```bash
+modix add <vendor_name> <model_name>
+```
+
+向配置中添加新模型：
+
+```bash
+$ modix add deepseek deepseek-chat
+已添加模型: deepseek-chat
+```
+
+### 删除模型
+
+```bash
+modix remove <model_name>
+```
+
+从配置中删除模型：
+
+```bash
+$ modix remove deepseek-reasoner
+已删除模型: deepseek-reasoner
+```
+
+### 检查配置
+
+```bash
+modix check
+```
+
+检查各种开发工具的配置：
+
+```bash
+$ modix check
+配置有效
+Claude Code: 已配置
+GitHub Copilot: 未配置
+Gemini Code: 未配置
+```
+
+### 显示配置文件路径
+
+```bash
+modix path
+```
+
+显示配置文件的路径：
+
+```bash
+$ modix path
+配置文件: /Users/username/.modix/settings.json
+```
+
+## 高级用法
+
+### 环境变量
+
+您可以使用环境变量覆盖配置设置：
+
+```bash
+export MODIX_API_ENDPOINT="https://custom.api.com/v1"
+export MODIX_API_KEY="your-custom-api-key"
+modix switch <model_name>
+```
+
+### 批量操作
+
+对多个模型执行批量操作：
+
+```bash
+# 列出所有模型及其状态
+modix list
+
+# 快速在模型之间切换
+modix switch model1
+modix switch model2
+modix switch model3
+```
+
+### 与 Claude Code 集成
+
+Modix 通过更新 `~/.claude/settings.json` 文件自动与 Claude Code 集成：
+
+```json
+{
+  "apiEndpoint": "https://api.deepseek.com/v1",
+  "apiKey": "your-api-key"
+}
+```
+
+这允许 Claude Code 在无需手动配置的情况下使用所选模型。
+
+## 错误处理
+
+### 常见错误
+
+1. **配置文件未找到**
+   ```bash
+   $ modix list
+   错误: 未找到配置文件。运行 'modix init' 创建一个。
+   ```
+
+2. **无效的模型名称**
+   ```bash
+   $ modix switch invalid-model
+   错误: 配置中未找到模型 'invalid-model'。
+   ```
+
+3. **缺少 API 密钥**
+   ```bash
+   $ modix switch deepseek-reasoner
+   错误: 未为提供商 'deepseek' 配置 API 密钥。
+   ```
+
+4. **网络错误**
+   ```bash
+   $ modix list
+   错误: 无法连接到 API 端点: 连接被拒绝
+   ```
+
+### 调试模式
+
+启用调试模式以获取更详细的错误信息：
+
+```bash
+export RUST_LOG=debug
+modix list
+```
+
+## 不同环境中的示例
+
+### 开发环境
+
+```bash
+# 初始化配置
+modix init
+
+# 列出可用模型
+modix list
+
+# 切换到开发模型
+modix switch deepseek-reasoner
+
+# 验证切换
+modix status
+```
+
+### 生产环境
+
+```bash
+# 检查配置
+modix check
+
+# 切换到生产模型
+modix switch qwen3-coder-plus
+
+# 验证 API 密钥已设置
+modix show qwen3-coder-plus
+```
+
+### CI/CD 管道
+
+```bash
+#!/bin/bash
+set -e
+
+# 如需要则初始化
+modix init
+
+# 切换到所需模型
+modix switch $TARGET_MODEL
+
+# 验证配置
+modix status
+
+# 运行测试或部署
+```

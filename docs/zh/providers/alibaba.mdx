@@ -1,0 +1,72 @@
+---
+title: '阿里巴巴'
+description: ''
+---
+
+## 通义千问 (Qwen)
+
+### 概述
+
+阿里巴巴的通义千问模型提供强大的 AI 能力，特别优化了中文语言处理。
+
+### 获取 API 访问权限
+
+#### 1. 注册账号
+
+- 访问 [阿里巴巴云](https://www.alibabacloud.com/)
+- 创建账号或登录
+- 导航到通义千问服务
+
+#### 2. 启用服务
+
+- 在控制台中找到通义千问服务
+- 为您的账号启用服务
+- 完成任何验证步骤
+
+#### 3. 获取 API 凭据
+
+- 进入 API 密钥部分
+- 创建新的 API 密钥
+- 记下 API 密钥和密钥
+
+### 配置
+
+#### 环境变量
+
+```bash
+export ALIBABA_API_KEY="您的-api-key-这里"
+export ALIBABA_API_SECRET="您的-api-secret-这里"
+```
+
+#### Modix 配置
+
+```json
+{
+  "vendor": "bailian",
+  "company": "Alibaba",
+  "api_endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "api_key": "您的-qwen-api-key",
+  "models": [
+    "qwen3-coder-plus",
+    "qwen3-coder-flash"
+  ]
+}
+```
+
+### 模型详情
+
+| 模型 | 描述 | 用例 |
+|------|------|------|
+| `qwen3-coder-plus` | 高级编码模型 | 软件开发 |
+| `qwen3-coder-flash` | 快速编码模型 | 快速代码生成 |
+
+### 使用示例
+
+```bash
+# 设置环境变量
+export ALIBABA_API_KEY="您的-api-key"
+export ALIBABA_API_SECRET="您的-secret"
+
+# 配置 Modix
+modix switch qwen3-coder-plus
+```

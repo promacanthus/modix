@@ -1,0 +1,67 @@
+---
+title: "Introduction"
+description: "Welcome to Modix CLI tool"
+---
+
+## Overview
+
+Modix is a Rust-based command-line tool for managing and switching between different Claude API backends and other large language models. It provides a unified configuration system and command-line interface to simplify multi-vendor environment management.
+
+![arch](/images/arch.svg)
+
+<Card
+  title="Quick Start"
+  icon="rocket"
+  href="quick-start"
+  horizontal
+>
+  Follow our three-step quickstart guide.
+</Card>
+
+## Features
+
+<Columns cols={3}>
+  <Card title="Multi-Vendor Support" icon="cloud">
+    Default configurations for 8 vendors
+  </Card>
+  <Card title="Model Switching" icon="shuffle">
+    Quick switching between LLM backends
+  </Card>
+  <Card title="Secure Configuration" icon="shield-check">
+    Encrypted storage for API keys and sensitive configuration data
+  </Card>
+  <Card title="Cross-Platform Support" icon="laptop">
+    Native binaries for Windows, macOS, and Linux
+  </Card>
+  <Card title="Colorful Output" icon="palette">
+    Enhanced CLI interface with color-coded output for improved readability and user experience
+  </Card>
+  <Card title="Extensible Design" icon="plus-circle">
+    Easy addition of new vendors and models
+  </Card>
+</Columns>
+
+## Default Models and Vendors
+
+The following table lists all default models included when running `modix init`:
+
+| Vendor        | Company        | API Endpoint                                                                                  | Models                              | Configuration                 |
+| ------------- | ------------- | ----------------------------------------------------------------------------------------- | --------------------------------- | -------------------------- |
+| `anthropic`   | Anthropic     | N/A (official)                                                                            | Claude                            | Pre-configured in Claude Code   |
+| `deepseek`    | DeepSeek      | `https://api.deepseek.com/v1`                                                             | deepseek-reasoner, deepseek-chat  | Manual setup required      |
+| `dashscope`   | Alibaba       | `https://dashscope.aliyuncs.com/compatible-mode/v1`                                       | qwen3-coder-plus, qwen3-coder-32b | Manual setup required      |
+| `volcengine`  | ByteDance     | `https://ark.cn-beijing.volces.com/api/coding`                                            | doubao-seed-code-preview-latest   | Manual setup required      |
+| `moonshot`    | Moonshot AI   | `https://api.moonshot.cn/anthropic`                                                       | kimi-k2-thinking-turbo            | Manual setup required      |
+| `StreamLake`  | Kuaishou      | `https://wanqing.streamlakeapi.com/api/gateway/v1/endpoints/ep-xxx-xxx/claude-code-proxy` | KAT-Coder                         | Manual setup required      |
+| `minimax`     | MiniMax       | `https://api.minimaxi.com/anthropic`                                                      | MiniMax-M2                        | Manual setup required      |
+| `bigmodel`    | ZHIPU AI      | `https://open.bigmodel.cn/api/anthropic`                                                  | GLM-4.6                           | Manual setup required      |
+
+## Need More Inspiration?
+
+<Card
+  title="View more usage examples"
+  icon="stars"
+  href="examples"
+>
+  Browse our curated collection of use cases.
+</Card>
