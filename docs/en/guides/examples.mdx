@@ -1,0 +1,357 @@
+---
+title: "Sub Commands"
+description: "Command-line reference and usage examples for the Modix CLI tool"
+---
+
+## Getting Started
+
+### Initialize Configuration
+
+```bash
+modix init
+```
+
+Initialize the configuration file. This command creates a default configuration file at `~/.modix/settings.json` (or `%APPDATA%\modix\settings.json` on Windows) with predefined models.
+
+```bash
+$ modix init
+Initialized default configuration at: /Users/username/.modix/settings.json
+Edit the configuration file to add your API keys and enable models
+Use 'modix list' to see available models
+```
+
+## Basic Commands
+
+### List Configured Models
+
+```bash
+modix list
+```
+
+Display all configured models, including name, vendor, and API endpoint status. The output is formatted as a clear table:
+
+```bash
+$ modix list
+MODEL                          COMPANY         VENDOR          ENDPOINT     API_KEY
+----------------------------------------------------------------------------------------------
+Claude                         Anthropic       Anthropic       [ - ]        [ - ]
+deepseek-reasoner              DeepSeek        deepseek        [ Y ]        [ N ]
+qwen3-coder-plus               Alibaba         bailian         [ Y ]        [ Y ]
+doubao-seed-code               ByteDance       volcengine      [ Y ]        [ N ]
+
+--- Summary ---
+Total models: 4
+Configured models: 2
+Current model: Claude
+```
+
+**Status Legend**:
+
+- `[ Y ]`: Configuration present (green)
+- `[ N ]`: Configuration missing (red)
+- `[ - ]`: Not applicable - pre-configured in Claude Code (blue)
+
+### Switch to a Different Model
+
+```bash
+modix switch <model_name>
+```
+
+Switch to the specified model. The Modix will search for the model name across all vendors and automatically update the Claude Code configuration.
+
+```bash
+$ modix switch deepseek-reasoner
+Switched to model: deepseek-reasoner
+
+$ modix switch qwen3-coder-plus
+Switched to model: qwen3-coder-plus
+```
+
+### Show Current Model Status
+
+```bash
+modix status
+```
+
+Display detailed information about the currently active model, including model name, vendor, company, and API endpoint.
+
+```bash
+$ modix status
+Current model: Claude
+Current vendor: anthropic
+Company: Anthropic
+API Endpoint:
+```
+
+### Show Configuration File Path
+
+```bash
+modix path
+```
+
+Display the absolute path to the Modix configuration file.
+
+```bash
+$ modix path
+Configuration file path: /Users/username/.modix/settings.json
+```
+
+### Show Vendor Details
+
+```bash
+modix show <vendor>
+```
+
+Display detailed information about a specific vendor, including company, API endpoint, API key, and all configured models. The current model will be highlighted in the list.
+
+```bash
+$ modix show deepseek
+Vendor Details:
+
+Vendor ID: deepseek
+Company: DeepSeek
+API Endpoint: https://api.deepseek.com/v1
+API Key: sk-xxxxxxxxxxxxxxxxxxxx
+
+Models:
+  - deepseek-reasoner
+  - deepseek-chat (current)
+```
+
+## Advanced Commands
+
+### Add a New Model Configuration
+
+```bash
+modix add <model_name> -c <company> -v <vendor> -u <endpoint> -k <api_key>
+```
+
+Add a new model configuration. If the vendor already exists, the model will be added to it; if the vendor doesn't exist, a new vendor configuration will be created.
+
+**Required Parameters**:
+
+- `<model_name>` - Model identifier/name
+- `-c, --company` - Company that developed the model (e.g., "Anthropic", "DeepSeek", "Alibaba")
+- `-v, --vendor` - API provider/vendor identifier (e.g., "anthropic", "deepseek", "dashscope", "moonshot")
+
+**Optional Parameters**:
+
+- `-u, --endpoint` - API endpoint URL
+- `-k, --api-key` - API key
+
+```bash
+# Add model to existing vendor
+$ modix add my-custom-model -c "Custom AI" -v deepseek -u "https://api.custom.com" -k "sk-12345"
+Added model: 'my-custom-model' to existing vendor 'deepseek'
+
+# Create new vendor and add model
+$ modix add nova-pro -c "Nova Labs" -v nova -u "https://api.nova.ai/v1" -k "sk-nova-123"
+Created new vendor 'nova' with model: nova-pro
+
+Switch to it with: modix switch nova-pro
+```
+
+**Understanding Vendor vs Company**:
+
+- **Vendor** (`-v, --vendor`): The API provider/vendor identifier. Usually the organization that provides the API endpoint (e.g., "anthropic", "deepseek", "dashscope", "moonshot", "volcengine", "streamlake", "minimax", "bigmodel")
+- **Company** (`-c, --company`): The company that develops the AI model. This is the organization that created the model (e.g., "Anthropic", "DeepSeek", "Alibaba", "Moonshot AI", "ByteDance", "Kuaishou", "MiniMax", "ZHIPU AI")
+
+### Remove a Model Configuration
+
+```bash
+modix remove <model_name>
+```
+
+Remove the specified model configuration. If the vendor has no remaining models after removing the model, the vendor will be automatically removed. If the removed model was the current model, Modix will switch to the default model.
+
+```bash
+$ modix remove my-custom-model
+Removed model: my-custom-model
+
+$ modix remove qwen3-coder-plus
+Removed model: qwen3-coder-plus
+Vendor 'bailian' had no remaining models and was removed
+
+$ modix remove Claude
+Removed model: Claude
+Removed current model. Switched to default: Claude@anthropic
+```
+
+### Update Vendor Configuration
+
+```bash
+modix update <vendor> [-m <model_name>] [-c <company>] [-u <endpoint>] [-k <api_key>]
+```
+
+Update the configuration of an existing vendor. You can update the company name, API endpoint, API key, or add a new model to the vendor.
+
+**Parameters**:
+
+- `<vendor>` - The vendor identifier to update
+
+**Optional Parameters**:
+
+- `-m, --add-model` - Add a model to the vendor
+- `-c, --company` - Update the company name
+- `-u, --endpoint` - Update the API endpoint URL
+- `-k, --api-key` - Update the API key
+
+```bash
+# Add model to existing vendor
+$ modix update deepseek -m "deepseek-coder"
+Updated vendor 'deepseek' with:
+  - Added model: deepseek-coder
+
+# Update vendor's API endpoint
+$ modix update deepseek -u "https://v1.deepseek.com"
+Updated vendor 'deepseek' with:
+  - API Endpoint: https://v1.deepseek.com
+
+# Update vendor's API key
+$ modix update deepseek -k "sk-new-key-123"
+Updated vendor 'deepseek' with:
+  - API Key: [updated]
+
+# Update multiple fields at once
+$ modix update deepseek -c "DeepSeek Tech" -u "https://api-v2.deepseek.com"
+Updated vendor 'deepseek' with:
+  - Company: DeepSeek Tech
+  - API Endpoint: https://api-v2.deepseek.com
+```
+
+### Check Configuration
+
+```bash
+modix check <tool>
+```
+
+Check the configuration for different development tools. Supports checking Claude Code, Modix, Codex, and Gemini CLI configurations.
+
+**Supported Tools**:
+
+- `claude-code`: Check Claude Code configuration
+- `modix`: Check Modix configuration (validate vendors, endpoints, and API keys)
+- `codex`: Check Codex configuration
+- `gemini-cli`: Check Gemini CLI configuration
+
+```bash
+# Check Claude Code configuration
+$ modix check claude-code
+Checking Claude Code configuration...
+Config file path: /Users/username/.claude/settings.json
+
+=== Claude Code Configuration ===
+{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "sk-ant-xxx",
+    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/v1"
+  },
+  "companyAnnouncements": [
+    "Welcome to Claude code, the configuration managed by modix."
+  ]
+}
+
+# Check Modix configuration
+$ modix check modix
+Checking Modix configuration...
+Config file path: /Users/username/.modix/settings.json
+
+=== Modix Configuration ===
+{
+  "current_vendor": "deepseek",
+  "current_model": "deepseek-coder",
+  "default_vendor": "anthropic",
+  "default_model": "Claude",
+  "vendors": {
+    "anthropic": {
+      "company": "Anthropic",
+      "api_endpoint": "",
+      "api_key": "",
+      "models": ["Claude"]
+    },
+    "deepseek": {
+      "company": "DeepSeek Tech",
+      "api_endpoint": "https://api.deepseek.com/v1",
+      "api_key": "sk-xxx",
+      "models": ["deepseek-coder"]
+    }
+  }
+}
+
+--- Configuration Summary ---
+Total vendors: 2
+Total models: 2
+Current selection: deepseek@deepseek-coder
+
+--- Configuration Health Check ---
+Health Check: Found 1 issue(s)
+  - Vendor 'deepseek' has empty API key
+```
+
+**Note**: Automatic skipping of `anthropic` health checks, as it's pre-configured in Claude Code and doesn't require manual API endpoint or key configuration.
+
+## Workflow Examples
+
+### Basic Workflow
+
+```bash
+# 1. Initialize configuration
+modix init
+
+# 2. List available models
+modix list
+
+# 3. Switch to a model
+modix switch <model_name>
+
+# 4. Check current status
+modix status
+
+# 5. Validate configuration
+modix check claude-code
+modix check modix
+```
+
+### Managing Multiple Vendors
+
+```bash
+# Add models from different vendors
+modix add gpt-4-turbo -c "OpenAI" -v openai -u "https://api.openai.com/v1" -k "sk-123"
+modix add qwen-max -c "Alibaba" -v dashscope -u "https://dashscope.aliyuncs.com/api/v1" -k "sk-456"
+modix add kimii-pro -c "Moonshot AI" -v moonshot -u "https://moonshot.cn/api/v1" -k "sk-789"
+
+# List all models
+modix list
+
+# Switch between models
+modix switch gpt-4-turbo
+modix switch qwen-max
+modix switch kimii-pro
+```
+
+### Updating Vendor Configuration
+
+```bash
+# Update endpoint for existing vendor
+modix update openai -u "https://api.openai.com/v1/chat"
+
+# Add multiple models to vendor
+modix update openai -m "gpt-3.5-turbo"
+modix update openai -m "gpt-4o-mini"
+
+# Show updated vendor details
+modix show openai
+```
+
+### Removing Unused Models
+
+```bash
+# Remove specific model
+modix remove gpt-3.5-turbo
+
+# Remove entire vendor (removes last model)
+modix remove gpt-4o-mini
+
+# List remaining models
+modix list
+```

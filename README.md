@@ -21,6 +21,7 @@ modix/
 ```
 
 This is a **monorepo** containing:
+
 - **Rust CLI tool** (`src/`) - The main `modix` command-line tool
 - **Documentation website** (`docs/`) - Astro-based documentation site with multi-language support
 

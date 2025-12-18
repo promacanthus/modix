@@ -1,0 +1,195 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "almond",
+  "name": "Modix",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "favicon": {
+    "light": "favicon-light.svg",
+    "dark": "favicon-dark.svg"
+  },
+  "navigation": {
+    "languages": [
+      {
+        "language": "en",
+        "tabs": [
+          {
+            "tab": "Guides",
+            "groups": [
+              {
+                "group": "Getting started",
+                "icon": "rocket",
+                "pages": [
+                  "en/guides/introduction",
+                  "en/guides/quick-start",
+                  "en/guides/development"
+                ]
+              },
+              {
+                "group": "Documents",
+                "icon": "terminal",
+                "pages": [
+                  "en/guides/examples",
+                  "en/guides/configuration",
+                  "en/guides/trouble-shoot",
+                  "en/guides/security"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "References",
+            "groups": [
+              {
+                "group": "Introduction",
+                "icon": "text-size",
+                "pages": [
+                  "en/providers/introduction"
+                ]
+              },
+              {
+                "group": "LLM Providers",
+                "icon": "text-size",
+                "pages": [
+                  "en/providers/anthropic",
+                  "en/providers/deepseek",
+                  "en/providers/alibaba",
+                  "en/providers/bytedance",
+                  "en/providers/moonshot",
+                  "en/providers/kuaishou",
+                  "en/providers/minimax",
+                  "en/providers/zhipu"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Updates",
+            "pages": [
+              "en/changelog"
+            ]
+          }
+        ],
+        "global": {
+          "anchors": [
+            {
+              "anchor": "Github Issue",
+              "href": "https://github.com/promacanthus/modix/issues",
+              "icon": "github"
+            }
+          ]
+        }
+      },
+      {
+        "language": "zh",
+        "tabs": [
+          {
+            "tab": "使用指南",
+            "groups": [
+              {
+                "group": "快速开始",
+                "icon": "rocket",
+                "pages": [
+                  "zh/guides/introduction",
+                  "zh/guides/quick-start",
+                  "zh/guides/development"
+                ]
+              },
+              {
+                "group": "详细说明",
+                "icon": "terminal",
+                "pages": [
+                  "zh/guides/examples",
+                  "zh/guides/configuration",
+                  "zh/guides/trouble-shoot",
+                  "zh/guides/security"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "参考文档",
+            "groups": [
+              {
+                "group": "简介",
+                "icon": "text-size",
+                "pages": [
+                  "zh/providers/introduction"
+                ]
+              },
+              {
+                "group": "大模型供应商",
+                "icon": "text-size",
+                "pages": [
+                  "zh/providers/anthropic",
+                  "zh/providers/deepseek",
+                  "zh/providers/alibaba",
+                  "zh/providers/bytedance",
+                  "zh/providers/moonshot",
+                  "zh/providers/kuaishou",
+                  "zh/providers/minimax",
+                  "zh/providers/zhipu"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "产品更新",
+            "pages": [
+              "zh/changelog"
+            ]
+          }
+        ],
+        "global": {
+          "anchors": [
+            {
+              "anchor": "Github 提问",
+              "icon": "github",
+              "href": "https://github.com/promacanthus/modix/issues"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "/"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:promacanthus@gmail.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Sotellix AI",
+      "href": "/"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/mintlify",
+      "github": "https://github.com/promacanthus/modix",
+      "linkedin": "https://linkedin.com/company/mintlify"
+    }
+  }
+}

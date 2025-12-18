@@ -1,0 +1,53 @@
+---
+title: '字节跳动'
+description: ''
+---
+
+## 豆包 (Doubao)
+
+### 概述
+
+字节跳动的豆包提供针对各种应用（包括编码）优化的 AI 模型。
+
+### 获取 API 访问权限
+
+#### 1. 注册账号
+
+- 访问 [字节云](https://cloud.volces.com/)
+- 注册账号
+- 完成身份验证
+
+#### 2. 访问 API
+
+- 导航到豆包服务
+- 启用 API 访问
+- 创建 API 凭据
+
+### 配置
+
+#### 环境变量
+
+```bash
+export BYTEDANCE_API_KEY="您的-api-key-这里"
+export BYTEDANCE_API_SECRET="您的-api-secret-这里"
+```
+
+#### Modix 配置
+
+```json
+{
+  "vendor": "volcengine",
+  "company": "ByteDance",
+  "api_endpoint": "https://ark.cn-beijing.volces.com/api/coding",
+  "api_key": "您的-doubao-api-key",
+  "models": [
+    "doubao-seed-code-preview-latest"
+  ]
+}
+```
+
+### 使用说明
+
+- 确保正确访问字节跳动服务的网络
+- 检查区域可用性和端点
+- 通过字节跳动控制台监控使用情况
