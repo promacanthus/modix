@@ -236,17 +236,17 @@ func runUpdate(vendor, addModel, company, endpoint, apiKey string) error {
 
 func init() {
 	pathCmd.Flags().BoolP("verbose", "v", false, "Show verbose output")
-	RootCmd.AddCommand(pathCmd)
+	// Command is already registered in root.go
 
 	removeCmd.Flags().BoolP("force", "f", false, "Force remove without confirmation")
-	RootCmd.AddCommand(removeCmd)
+	// Command is already registered in root.go
 
 	showCmd.Flags().BoolP("include-key", "k", false, "Include API key in output")
-	RootCmd.AddCommand(showCmd)
+	// Command is already registered in root.go
 
 	updateCmd.Flags().StringP("add-model", "m", "", "Add a model to the vendor")
 	updateCmd.Flags().StringP("company", "c", "", "Update company name")
 	updateCmd.Flags().StringP("endpoint", "u", "", "Update API endpoint URL")
 	updateCmd.Flags().StringP("api-key", "k", "", "Update API key")
-	RootCmd.AddCommand(updateCmd)
+	// Command is already registered in root.go
 }

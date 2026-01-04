@@ -40,5 +40,5 @@ func runStatus() error {
 }
 
 func init() {
-	RootCmd.AddCommand(statusCmd)
+	// Command is already registered in root.go
 }

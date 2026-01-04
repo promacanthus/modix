@@ -1,0 +1,169 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+
+builds:
+  - id: modix-linux-amd64
+    main: ./cmd/modix
+    binary: modix
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Build={{.ShortCommit}}
+      - -X main.Commit={{.Commit}}
+      - -X main.Branch={{.Branch}}
+
+  - id: modix-linux-arm64
+    main: ./cmd/modix
+    binary: modix
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Build={{.ShortCommit}}
+      - -X main.Commit={{.Commit}}
+      - -X main.Branch={{.Branch}}
+
+  - id: modix-darwin-amd64
+    main: ./cmd/modix
+    binary: modix
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+    goarch:
+      - amd64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Build={{.ShortCommit}}
+      - -X main.Commit={{.Commit}}
+      - -X main.Branch={{.Branch}}
+
+  - id: modix-darwin-arm64
+    main: ./cmd/modix
+    binary: modix
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+    goarch:
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Build={{.ShortCommit}}
+      - -X main.Commit={{.Commit}}
+      - -X main.Branch={{.Branch}}
+
+  - id: modix-windows-amd64
+    main: ./cmd/modix
+    binary: modix
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+    goarch:
+      - amd64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Build={{.ShortCommit}}
+      - -X main.Commit={{.Commit}}
+      - -X main.Branch={{.Branch}}
+      - -buildmode=exe
+
+  - id: modix-windows-arm64
+    main: ./cmd/modix
+    binary: modix
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+    goarch:
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Build={{.ShortCommit}}
+      - -X main.Commit={{.Commit}}
+      - -X main.Branch={{.Branch}}
+      - -buildmode=exe
+
+archives:
+  - id: modix-archive
+    format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+      - README.md
+      - README_zh.md
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "Merge pull request"
+      - "Merge branch"
+  groups:
+    - title: "Features"
+      regexp: '^.*feat(\(\w+\))?:.*$'
+      order: 0
+    - title: "Bug Fixes"
+      regexp: '^.*fix(\(\w+\))?:.*$'
+      order: 1
+    - title: "Others"
+      order: 999
+
+release:
+  github:
+    owner: promacanthus
+    name: modix
+  draft: false
+  prerelease: auto
+  name_template: "v{{.Version}}"
+  header: |
+    ## modix v{{.Version}}
+
+    Pre-compiled binaries for Linux, macOS (Intel & Apple Silicon), and Windows (AMD64 & ARM64).
+
+    ### Installation
+
+    **Quick Install (macOS/Linux):**
+    ```bash
+    curl -sSL https://raw.githubusercontent.com/promacanthus/modix/main/scripts/install.sh | bash
+    ```
+
+    **Manual Install:**
+    Download the appropriate binary for your platform below, extract it, and place it in your PATH.
+
+# Announce the release
+announce:
+  skip: false

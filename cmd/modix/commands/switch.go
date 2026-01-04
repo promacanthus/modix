@@ -69,5 +69,5 @@ func runSwitch(modelName string) error {
 }
 
 func init() {
-	RootCmd.AddCommand(switchCmd)
+	// Command is already registered in root.go
 }

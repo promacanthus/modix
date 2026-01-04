@@ -91,6 +91,4 @@ func init() {
 	addCmd.MarkFlagRequired("vendor")
 	addCmd.MarkFlagRequired("endpoint")
 	addCmd.MarkFlagRequired("api-key")
-
-	RootCmd.AddCommand(addCmd)
 }

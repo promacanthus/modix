@@ -102,14 +102,14 @@ func checkModixConfig() error {
 
 	// Pretty print JSON with syntax highlighting
 	configMap := map[string]interface{}{
-		"current_vendor":  modixConfig.CurrentVendor,
-		"current_model":   modixConfig.CurrentModel,
-		"default_vendor":  modixConfig.DefaultVendor,
-		"default_model":   modixConfig.DefaultModel,
-		"vendors":         modixConfig.Vendors,
-		"config_version":  modixConfig.ConfigVersion,
-		"created_at":      modixConfig.CreatedAt,
-		"updated_at":      modixConfig.UpdatedAt,
+		"current_vendor": modixConfig.CurrentVendor,
+		"current_model":  modixConfig.CurrentModel,
+		"default_vendor": modixConfig.DefaultVendor,
+		"default_model":  modixConfig.DefaultModel,
+		"vendors":        modixConfig.Vendors,
+		"config_version": modixConfig.ConfigVersion,
+		"created_at":     modixConfig.CreatedAt,
+		"updated_at":     modixConfig.UpdatedAt,
 	}
 
 	prettyJSON, err := json.MarshalIndent(configMap, "", "  ")
@@ -189,5 +189,5 @@ func checkConfigHealth(config *config.ModixConfig) {
 }
 
 func init() {
-	RootCmd.AddCommand(checkCmd)
+	// Command is already registered in root.go
 }

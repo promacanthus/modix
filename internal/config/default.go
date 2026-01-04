@@ -179,11 +179,11 @@ func (c *ModixConfig) GetCurrentVendorModels() []string {
 }
 
 // GetLastUpdated returns the last update timestamp
-func (c *ModixConfig) GetLastUpdated() *time.Time {
+func (c *ModixConfig) GetLastUpdated() time.Time {
 	return c.UpdatedAt
 }
 
 // GetCreatedAt returns the creation timestamp
-func (c *ModixConfig) GetCreatedAt() *time.Time {
+func (c *ModixConfig) GetCreatedAt() time.Time {
 	return c.CreatedAt
 }

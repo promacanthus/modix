@@ -68,25 +68,29 @@ func runList() error {
 				apiKeyDisplay = green.Sprint("[ Y ]")
 			}
 
-			// Highlight current model
-			modelDisplay := modelName
+			// Highlight current model with proper alignment
+			var modelDisplay string
 			if modixConfig.CurrentVendor == modelInfo.Vendor && modixConfig.CurrentModel == modelName {
-				modelDisplay = yellow.Sprint(modelName)
+				modelDisplay = yellow.Sprintf("%-*s", 35, modelName)
 			} else {
-				modelDisplay = modelName
+				modelDisplay = blue.Sprintf("%-*s", 35, modelName)
 			}
 
-			// Highlight current vendor
-			vendorDisplay := modelInfo.Vendor
+			// Highlight current vendor with proper alignment
+			var vendorDisplay string
 			if modixConfig.CurrentVendor == modelInfo.Vendor {
-				vendorDisplay = yellow.Sprint(modelInfo.Vendor)
+				vendorDisplay = yellow.Sprintf("%-*s", 15, modelInfo.Vendor)
 			} else {
-				vendorDisplay = modelInfo.Vendor
+				vendorDisplay = blue.Sprintf("%-*s", 15, modelInfo.Vendor)
 			}
 
-			blue.Printf("%-35s %-15s %-15s %-10s %-10s\n",
+			// Format company name
+			companyDisplay := blue.Sprintf("%-*s", 15, modelInfo.Company)
+
+			// Print the line with proper alignment
+			fmt.Printf("%s %s %s %-10s %-10s\n",
 				modelDisplay,
-				modelInfo.Company,
+				companyDisplay,
 				vendorDisplay,
 				endpointDisplay,
 				apiKeyDisplay)
@@ -117,5 +121,5 @@ func runList() error {
 }
 
 func init() {
-	RootCmd.AddCommand(listCmd)
+	// Command is already registered in root.go
 }

@@ -43,5 +43,5 @@ func runInit() error {
 }
 
 func init() {
-	RootCmd.AddCommand(initCmd)
+	// Command is already registered in root.go
 }

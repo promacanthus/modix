@@ -132,15 +132,15 @@ func UpdateClaudeEnvConfig(modelName, vendor string) error {
 	} else {
 		// For non-Claude models, set up the detailed env configuration
 		envConfig := map[string]interface{}{
-			"ANTHROPIC_BASE_URL":          modelConfig.APIEndpoint,
-			"ANTHROPIC_AUTH_TOKEN":        modelConfig.APIKey,
-			"API_TIMEOUT_MS":                "3000000",
+			"ANTHROPIC_BASE_URL":                       modelConfig.APIEndpoint,
+			"ANTHROPIC_AUTH_TOKEN":                     modelConfig.APIKey,
+			"API_TIMEOUT_MS":                           "3000000",
 			"CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": 1,
-			"ANTHROPIC_MODEL":               modelName,
-			"ANTHROPIC_SMALL_FAST_MODEL":    modelName,
-			"ANTHROPIC_DEFAULT_SONNET_MODEL": modelName,
-			"ANTHROPIC_DEFAULT_OPUS_MODEL":  modelName,
-			"ANTHROPIC_DEFAULT_HAIKU_MODEL": modelName,
+			"ANTHROPIC_MODEL":                          modelName,
+			"ANTHROPIC_SMALL_FAST_MODEL":               modelName,
+			"ANTHROPIC_DEFAULT_SONNET_MODEL":           modelName,
+			"ANTHROPIC_DEFAULT_OPUS_MODEL":             modelName,
+			"ANTHROPIC_DEFAULT_HAIKU_MODEL":            modelName,
 		}
 
 		// Update the env field with the new configuration

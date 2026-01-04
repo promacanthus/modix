@@ -6,39 +6,37 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-
-	"github.com/spf13/viper"
 )
-
-// ModelConfig represents the configuration for a single model
-type ModelConfig struct {
-	Company      string   `json:"company,omitempty" mapstructure:"company"`
-	APIEndpoint  string   `json:"api_endpoint,omitempty" mapstructure:"api_endpoint"`
-	APIKey       string   `json:"api_key,omitempty" mapstructure:"api_key"`
-	Models       []string `json:"models,omitempty" mapstructure:"models"`
-}
 
 // ModixConfig represents the main configuration structure
 type ModixConfig struct {
-	CurrentVendor  string                 `json:"current_vendor,omitempty" mapstructure:"current_vendor"`
-	CurrentModel   string                 `json:"current_model,omitempty" mapstructure:"current_model"`
-	DefaultVendor  string                 `json:"default_vendor,omitempty" mapstructure:"default_vendor"`
-	DefaultModel   string                 `json:"default_model,omitempty" mapstructure:"default_model"`
-	Vendors        map[string]ModelConfig `json:"vendors,omitempty" mapstructure:"vendors"`
-	ConfigVersion  string                 `json:"config_version,omitempty" mapstructure:"config_version"`
-	CreatedAt      *time.Time             `json:"created_at,omitempty" mapstructure:"created_at"`
-	UpdatedAt      *time.Time             `json:"updated_at,omitempty" mapstructure:"updated_at"`
+	CurrentVendor string                 `json:"current_vendor,omitempty" mapstructure:"current_vendor"`
+	CurrentModel  string                 `json:"current_model,omitempty" mapstructure:"current_model"`
+	DefaultVendor string                 `json:"default_vendor,omitempty" mapstructure:"default_vendor"`
+	DefaultModel  string                 `json:"default_model,omitempty" mapstructure:"default_model"`
+	Vendors       map[string]ModelConfig `json:"vendors,omitempty" mapstructure:"vendors"`
+	ConfigVersion string                 `json:"config_version,omitempty" mapstructure:"config_version"`
+	CreatedAt     time.Time              `json:"created_at,omitempty" mapstructure:"created_at"`
+	UpdatedAt     time.Time              `json:"updated_at,omitempty" mapstructure:"updated_at"`
+}
+
+// ModelConfig represents the configuration for a single model
+type ModelConfig struct {
+	Company     string   `json:"company,omitempty" mapstructure:"company"`
+	APIEndpoint string   `json:"api_endpoint,omitempty" mapstructure:"api_endpoint"`
+	APIKey      string   `json:"api_key,omitempty" mapstructure:"api_key"`
+	Models      []string `json:"models,omitempty" mapstructure:"models"`
 }
 
 // NewModixConfig creates a new default Modix configuration
 func NewModixConfig() *ModixConfig {
 	return &ModixConfig{
-		CurrentVendor:  "anthropic",
-		CurrentModel:   "Claude",
-		DefaultVendor:  "anthropic",
-		DefaultModel:   "Claude",
-		Vendors:        make(map[string]ModelConfig),
-		ConfigVersion:  "1.0.0",
+		CurrentVendor: "anthropic",
+		CurrentModel:  "Claude",
+		DefaultVendor: "anthropic",
+		DefaultModel:  "Claude",
+		Vendors:       make(map[string]ModelConfig),
+		ConfigVersion: "1.0.0",
 	}
 }
 
@@ -198,8 +196,6 @@ func GetConfigPath() string {
 // LoadConfig loads configuration from the default path
 func LoadConfig() (*ModixConfig, error) {
 	configPath := GetConfigPath()
-	v := viper.New()
-	v.SetConfigFile(configPath)
 
 	// If config file doesn't exist, create default config
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -210,12 +206,14 @@ func LoadConfig() (*ModixConfig, error) {
 		return config, nil
 	}
 
-	if err := v.ReadInConfig(); err != nil {
+	// Read the file directly and use custom unmarshaling
+	data, err := os.ReadFile(configPath)
+	if err != nil {
 		return nil, fmt.Errorf("failed to read configuration file: %w", err)
 	}
 
 	var config ModixConfig
-	if err := v.Unmarshal(&config); err != nil {
+	if err := json.Unmarshal(data, &config); err != nil {
 		return nil, fmt.Errorf("failed to parse configuration JSON: %w", err)
 	}
 
@@ -229,15 +227,14 @@ func LoadConfig() (*ModixConfig, error) {
 
 // LoadConfigFromPath loads configuration from a custom path
 func LoadConfigFromPath(path string) (*ModixConfig, error) {
-	v := viper.New()
-	v.SetConfigFile(path)
-
-	if err := v.ReadInConfig(); err != nil {
+	// Read the file directly and use custom unmarshaling
+	data, err := os.ReadFile(path)
+	if err != nil {
 		return nil, fmt.Errorf("failed to read configuration file: %w", err)
 	}
 
 	var config ModixConfig
-	if err := v.Unmarshal(&config); err != nil {
+	if err := json.Unmarshal(data, &config); err != nil {
 		return nil, fmt.Errorf("failed to parse configuration JSON: %w", err)
 	}
 
@@ -255,9 +252,9 @@ func SaveConfig(config *ModixConfig) error {
 
 	// Update timestamps
 	now := time.Now()
-	config.UpdatedAt = &now
-	if config.CreatedAt == nil {
-		config.CreatedAt = &now
+	config.UpdatedAt = now
+	if config.CreatedAt.IsZero() {
+		config.CreatedAt = now
 	}
 
 	// Create parent directory if it doesn't exist
@@ -273,34 +270,6 @@ func SaveConfig(config *ModixConfig) error {
 
 	// Write to file
 	if err := os.WriteFile(configPath, configJSON, 0600); err != nil {
-		return fmt.Errorf("failed to write configuration file: %w", err)
-	}
-
-	return nil
-}
-
-// SaveConfigToPath saves configuration to a custom path
-func SaveConfigToPath(config *ModixConfig, path string) error {
-	// Update timestamps
-	now := time.Now()
-	config.UpdatedAt = &now
-	if config.CreatedAt == nil {
-		config.CreatedAt = &now
-	}
-
-	// Create parent directory if it doesn't exist
-	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
-		return fmt.Errorf("failed to create configuration directory: %w", err)
-	}
-
-	// Marshal to JSON with indentation
-	configJSON, err := json.MarshalIndent(config, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to serialize configuration to JSON: %w", err)
-	}
-
-	// Write to file
-	if err := os.WriteFile(path, configJSON, 0600); err != nil {
 		return fmt.Errorf("failed to write configuration file: %w", err)
 	}
 
