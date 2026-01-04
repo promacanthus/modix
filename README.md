@@ -4,7 +4,7 @@ A Go-based CLI tool for managing and switching between Claude API backends and o
 
 ## 📁 Project Structure
 
-```
+```bash
 modix/
 ├── go.mod                  # Go module configuration
 ├── cmd/                    # Go CLI tool source code
@@ -13,9 +13,11 @@ modix/
 │       └── commands/
 ├── internal/               # Internal packages
 │   └── config/
-├── docs/                   # Documentation
-│   ├── README.md
-│   └── CLAUDE.md
+├── .beads/                 # Beads issue tracking system
+├── .claude/                # Claude Code configuration
+├── .github/                # GitHub Actions CI/CD
+├── AGENTS.md               # AI agent usage guidelines
+├── CLAUDE.md               # Claude Code usage instructions
 └── README.md               # Project documentation
 ```
 
@@ -23,7 +25,8 @@ This is a **Go CLI tool** with the following structure:
 
 - **Go CLI tool** (`cmd/modix/`) - The main `modix` command-line tool
 - **Configuration management** (`internal/config/`) - Configuration handling and model management
-- **Documentation** (`docs/`) - Project documentation and guides
+- **Issue tracking** (`.beads/`) - Beads issue tracking system
+- **Documentation** (`README.md`, `AGENTS.md`, `CLAUDE.md`) - Project documentation and guides
 
 ## Overview
 
@@ -465,7 +468,7 @@ See [CI/CD Guide](./CI_CD_GUIDE.md) for detailed information about the CI/CD con
 
 - **Issues**: [GitHub Issues](https://github.com/promacanthus/modix/issues) - Bug reports and feature requests
 - **Discussions**: [GitHub Discussions](https://github.com/promacanthus/modix/discussions) - Questions and community discussions
-- **Documentation**: Check the [docs/](docs/) folder for detailed technical specifications
+- **Documentation**: Check the README.md, AGENTS.md, and CLAUDE.md files for detailed technical specifications
 
 ## Changelog
 
