@@ -1,11 +1,9 @@
-package commands
+package main
 
 import (
 	"fmt"
 
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-
 	"github.com/promacanthus/modix/internal/config"
 )
 
@@ -28,17 +26,13 @@ func runStatus() error {
 	if currentModel, modelConfig, exists := modixConfig.GetCurrentModel(); exists {
 		bold.Println("Current model status:")
 		fmt.Println()
-		color.Cyan("Current model: %s\n", *currentModel)
-		color.Cyan("Current vendor: %s\n", modixConfig.CurrentVendor)
-		color.Cyan("Company: %s\n", modelConfig.Company)
-		color.Cyan("API Endpoint: %s\n", modelConfig.APIEndpoint)
+		blue.Printf("Current model: %s\n", *currentModel)
+		blue.Printf("Current vendor: %s\n", modixConfig.CurrentVendor)
+		blue.Printf("Company: %s\n", modelConfig.Company)
+		blue.Printf("API Endpoint: %s\n", modelConfig.APIEndpoint)
 	} else {
 		red.Println("No current model configured")
 	}
 
 	return nil
-}
-
-func init() {
-	// Command is already registered in root.go
 }

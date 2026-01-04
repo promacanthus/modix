@@ -1,10 +1,9 @@
-package commands
+package main
 
 import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-
 	"github.com/promacanthus/modix/internal/config"
 )
 
@@ -232,21 +231,4 @@ func runUpdate(vendor, addModel, company, endpoint, apiKey string) error {
 	}
 
 	return nil
-}
-
-func init() {
-	pathCmd.Flags().BoolP("verbose", "v", false, "Show verbose output")
-	// Command is already registered in root.go
-
-	removeCmd.Flags().BoolP("force", "f", false, "Force remove without confirmation")
-	// Command is already registered in root.go
-
-	showCmd.Flags().BoolP("include-key", "k", false, "Include API key in output")
-	// Command is already registered in root.go
-
-	updateCmd.Flags().StringP("add-model", "m", "", "Add a model to the vendor")
-	updateCmd.Flags().StringP("company", "c", "", "Update company name")
-	updateCmd.Flags().StringP("endpoint", "u", "", "Update API endpoint URL")
-	updateCmd.Flags().StringP("api-key", "k", "", "Update API key")
-	// Command is already registered in root.go
 }

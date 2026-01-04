@@ -1,10 +1,9 @@
-package commands
+package main
 
 import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-
 	"github.com/promacanthus/modix/internal/config"
 )
 

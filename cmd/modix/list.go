@@ -1,4 +1,4 @@
-package commands
+package main
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-
 	"github.com/promacanthus/modix/internal/config"
 )
 
@@ -118,8 +117,4 @@ func runList() error {
 	blue.Printf("%-20s %s\n", "Current model:", yellow.Sprint(currentModelInfo))
 
 	return nil
-}
-
-func init() {
-	// Command is already registered in root.go
 }
