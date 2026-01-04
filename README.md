@@ -1,29 +1,29 @@
 # Modix
 
-A Rust-based CLI tool for managing and switching between Claude API backends and other large language models.
+A Go-based CLI tool for managing and switching between Claude API backends and other large language models.
 
 ## 📁 Project Structure
 
 ```
 modix/
-├── Cargo.toml              # Rust CLI tool configuration
-├── src/                    # Rust source code (modix CLI tool)
-│   ├── main.rs
-│   ├── config.rs
-│   └── config_manager.rs
-├── docs/                   # Astro documentation website
-│   ├── package.json        # Astro project configuration
-│   ├── astro.config.mjs
-│   └── src/
-│       ├── content/        # Documentation content
-│       └── assets/
+├── go.mod                  # Go module configuration
+├── cmd/                    # Go CLI tool source code
+│   └── modix/
+│       ├── main.go
+│       └── commands/
+├── internal/               # Internal packages
+│   └── config/
+├── docs/                   # Documentation
+│   ├── README.md
+│   └── CLAUDE.md
 └── README.md               # Project documentation
 ```
 
-This is a **monorepo** containing:
+This is a **Go CLI tool** with the following structure:
 
-- **Rust CLI tool** (`src/`) - The main `modix` command-line tool
-- **Documentation website** (`docs/`) - Astro-based documentation site with multi-language support
+- **Go CLI tool** (`cmd/modix/`) - The main `modix` command-line tool
+- **Configuration management** (`internal/config/`) - Configuration handling and model management
+- **Documentation** (`docs/`) - Project documentation and guides
 
 ## Overview
 
@@ -39,7 +39,7 @@ Modix is designed to simplify the management of multiple LLM backends by providi
 - 🔄 CLI command implementation in progress
 - 🔄 API integration development upcoming
 
-**Latest Update**: November 18, 2025 - Core configuration and model management infrastructure completed
+**Latest Update**: January 4, 2026 - Complete Rust to Go migration completed
 
 ## Features
 
@@ -57,12 +57,12 @@ Modix is designed to simplify the management of multiple LLM backends by providi
 ```bash
 git clone https://github.com/promacanthus/modix.git
 cd modix
-cargo build --release
+go build -o modix ./cmd/modix
 ```
 
-The binary will be available at `target/release/modix`.
+The binary will be available at `modix`.
 
-**Prerequisites**: [Rust and Cargo](https://rustup.rs/) must be installed on your system.
+**Prerequisites**: [Go](https://go.dev/) must be installed on your system.
 
 ### Pre-built Binaries
 
