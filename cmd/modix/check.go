@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/promacanthus/modix/internal/config"
+	"github.com/spf13/cobra"
 )
 
 // checkCmd represents the check command
@@ -27,8 +27,6 @@ func runCheck(tool string) error {
 	switch tool {
 	case "claude-code":
 		return checkClaudeCode()
-	case "vscode":
-		return checkVSCode()
 	default:
 		return fmt.Errorf("unknown tool: %s", tool)
 	}
@@ -73,12 +71,5 @@ func checkClaudeCode() error {
 		fmt.Println("⚠ Anthropic vendor not configured")
 	}
 
-	return nil
-}
-
-func checkVSCode() error {
-	fmt.Println("Checking VS Code configuration...")
-	configPath := config.GetConfigFilePath()
-	fmt.Printf("Config file path: %s\n", configPath)
 	return nil
 }

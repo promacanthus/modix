@@ -7,76 +7,75 @@ func SetupDefaultModels() *ModixConfig {
 	config := NewModixConfig()
 
 	// Anthropic
-	claudeConfig := ModelConfig{
-		Company:     "Anthropic",
-		APIEndpoint: "",
-		APIKey:      "",
-		Models:      []string{"Claude"},
+	anthropic := VendorConfig{
+		Company: "Anthropic",
+		Models:  []string{"Claude"},
 	}
-	config.AddVendor("anthropic", claudeConfig)
+	config.AddVendor("anthropic", anthropic)
 
 	// DeepSeek
-	deepseekConfig := ModelConfig{
+	deepseek := VendorConfig{
 		Company:     "DeepSeek",
 		APIEndpoint: "https://api.deepseek.com/v1",
-		APIKey:      "",
 		Models:      []string{"deepseek-reasoner", "deepseek-chat"},
 	}
-	config.AddVendor("deepseek", deepseekConfig)
+	config.AddVendor("deepseek", deepseek)
 
 	// Alibaba
-	qwenConfig := ModelConfig{
+	bailian := VendorConfig{
 		Company:     "Alibaba",
 		APIEndpoint: "https://dashscope.aliyuncs.com/compatible-mode/v1",
-		APIKey:      "",
 		Models:      []string{"qwen3-coder-plus", "qwen3-coder-flash"},
 	}
-	config.AddVendor("bailian", qwenConfig)
+	config.AddVendor("bailian", bailian)
 
 	// ByteDance
-	doubaoConfig := ModelConfig{
+	volcengine := VendorConfig{
 		Company:     "ByteDance",
 		APIEndpoint: "https://ark.cn-beijing.volces.com/api/coding",
-		APIKey:      "",
 		Models:      []string{"doubao-seed-code-preview-latest"},
 	}
-	config.AddVendor("volcengine", doubaoConfig)
+	config.AddVendor("volcengine", volcengine)
 
 	// Moonshot AI
-	kimiConfig := ModelConfig{
+	moonshoot := VendorConfig{
 		Company:     "Moonshot AI",
 		APIEndpoint: "https://api.moonshot.cn/anthropic",
-		APIKey:      "",
 		Models:      []string{"kimi-k2-thinking-turbo"},
 	}
-	config.AddVendor("moonshot", kimiConfig)
+	config.AddVendor("moonshot", moonshoot)
 
-	// KuaiShou
-	katConfig := ModelConfig{
+	// Kuaishou
+	streamlake := VendorConfig{
 		Company:     "Kuaishou",
 		APIEndpoint: "https://wanqing.streamlakeapi.com/api/gateway/v1/endpoints/ep-xxx-xxx/claude-code-proxy",
-		APIKey:      "",
 		Models:      []string{"KAT-Coder"},
 	}
-	config.AddVendor("streamlake", katConfig)
+	config.AddVendor("streamlake", streamlake)
 
 	// MiniMax
-	minimaxConfig := ModelConfig{
+	minimax := VendorConfig{
 		Company:     "MiniMax",
 		APIEndpoint: "https://api.minimaxi.com/anthropic",
-		APIKey:      "",
 		Models:      []string{"MiniMax-M2"},
 	}
-	config.AddVendor("minimax", minimaxConfig)
+	config.AddVendor("minimax", minimax)
 
 	// ZHIPU AI
-	zhipuConfig := ModelConfig{
+	bigmodel := VendorConfig{
 		Company:     "ZHIPU AI",
 		APIEndpoint: "https://open.bigmodel.cn/api/anthropic",
-		APIKey:      "",
 		Models:      []string{"GLM-4.6"},
 	}
-	config.AddVendor("bigmodel", zhipuConfig)
+	config.AddVendor("bigmodel", bigmodel)
+
+	// XiaoMi
+	xiaomi := VendorConfig{
+		Company:     "Xiaomi",
+		APIEndpoint: "https://api.xiaomimimo.com/anthropic",
+		Models:      []string{"mimo-v2-flash"},
+	}
+	config.AddVendor("xiaomi", xiaomi)
 
 	// Set current and default vendor/model to the first enabled model
 	config.CurrentVendor = "anthropic"
@@ -88,7 +87,7 @@ func SetupDefaultModels() *ModixConfig {
 }
 
 // GetDefaultModels returns the list of default models that would be created
-func GetDefaultModels() map[string]ModelConfig {
+func GetDefaultModels() map[string]VendorConfig {
 	defaultConfig := SetupDefaultModels()
 	return defaultConfig.Vendors
 }

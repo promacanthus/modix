@@ -10,22 +10,22 @@ import (
 
 // ModixConfig represents the main configuration structure
 type ModixConfig struct {
-	CurrentVendor string                 `json:"current_vendor,omitempty" mapstructure:"current_vendor"`
-	CurrentModel  string                 `json:"current_model,omitempty" mapstructure:"current_model"`
-	DefaultVendor string                 `json:"default_vendor,omitempty" mapstructure:"default_vendor"`
-	DefaultModel  string                 `json:"default_model,omitempty" mapstructure:"default_model"`
-	Vendors       map[string]ModelConfig `json:"vendors,omitempty" mapstructure:"vendors"`
-	ConfigVersion string                 `json:"config_version,omitempty" mapstructure:"config_version"`
-	CreatedAt     time.Time              `json:"created_at,omitempty" mapstructure:"created_at"`
-	UpdatedAt     time.Time              `json:"updated_at,omitempty" mapstructure:"updated_at"`
+	CurrentVendor string                  `json:"current_vendor,omitempty"`
+	CurrentModel  string                  `json:"current_model,omitempty"`
+	DefaultVendor string                  `json:"default_vendor,omitempty"`
+	DefaultModel  string                  `json:"default_model,omitempty"`
+	Vendors       map[string]VendorConfig `json:"vendors,omitempty"`
+	ConfigVersion string                  `json:"config_version,omitempty"`
+	CreatedAt     time.Time               `json:"created_at,omitempty"`
+	UpdatedAt     time.Time               `json:"updated_at,omitempty"`
 }
 
-// ModelConfig represents the configuration for a single model
-type ModelConfig struct {
-	Company     string   `json:"company,omitempty" mapstructure:"company"`
-	APIEndpoint string   `json:"api_endpoint,omitempty" mapstructure:"api_endpoint"`
-	APIKey      string   `json:"api_key,omitempty" mapstructure:"api_key"`
-	Models      []string `json:"models,omitempty" mapstructure:"models"`
+// VendorConfig represents the configuration for a single model
+type VendorConfig struct {
+	Company     string   `json:"company,omitempty"`
+	APIEndpoint string   `json:"api_endpoint,omitempty"`
+	APIKey      string   `json:"api_key,omitempty"`
+	Models      []string `json:"models,omitempty"`
 }
 
 // NewModixConfig creates a new default Modix configuration
@@ -35,13 +35,13 @@ func NewModixConfig() *ModixConfig {
 		CurrentModel:  "Claude",
 		DefaultVendor: "anthropic",
 		DefaultModel:  "Claude",
-		Vendors:       make(map[string]ModelConfig),
+		Vendors:       make(map[string]VendorConfig),
 		ConfigVersion: "1.0.0",
 	}
 }
 
 // AddVendor adds a new vendor configuration
-func (c *ModixConfig) AddVendor(vendor string, config ModelConfig) {
+func (c *ModixConfig) AddVendor(vendor string, config VendorConfig) {
 	c.Vendors[vendor] = config
 }
 
@@ -67,7 +67,7 @@ func (c *ModixConfig) RemoveVendor(vendor string) {
 }
 
 // GetModel returns a model configuration by vendor and model name
-func (c *ModixConfig) GetModel(vendor, modelName string) (*ModelConfig, bool) {
+func (c *ModixConfig) GetModel(vendor, modelName string) (*VendorConfig, bool) {
 	if config, exists := c.Vendors[vendor]; exists {
 		for _, model := range config.Models {
 			if model == modelName {
@@ -79,7 +79,7 @@ func (c *ModixConfig) GetModel(vendor, modelName string) (*ModelConfig, bool) {
 }
 
 // GetVendor returns a vendor configuration
-func (c *ModixConfig) GetVendor(vendor string) (*ModelConfig, bool) {
+func (c *ModixConfig) GetVendor(vendor string) (*VendorConfig, bool) {
 	config, exists := c.Vendors[vendor]
 	return &config, exists
 }
@@ -100,7 +100,7 @@ func (c *ModixConfig) SetCurrentVendorAndModel(vendor, modelName string) error {
 }
 
 // GetCurrentModel returns the current active vendor and model configuration
-func (c *ModixConfig) GetCurrentModel() (*string, *ModelConfig, bool) {
+func (c *ModixConfig) GetCurrentModel() (*string, *VendorConfig, bool) {
 	if config, exists := c.Vendors[c.CurrentVendor]; exists {
 		for _, model := range config.Models {
 			if model == c.CurrentModel {
@@ -112,7 +112,7 @@ func (c *ModixConfig) GetCurrentModel() (*string, *ModelConfig, bool) {
 }
 
 // GetVendors returns all available vendors
-func (c *ModixConfig) GetVendors() map[string]ModelConfig {
+func (c *ModixConfig) GetVendors() map[string]VendorConfig {
 	return c.Vendors
 }
 

@@ -41,6 +41,11 @@ func GetVersionInfo() VersionInfo {
 	}
 }
 
+// init initializes the color package to force colored output
+func init() {
+	color.NoColor = false
+}
+
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "modix",

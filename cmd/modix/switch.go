@@ -56,6 +56,11 @@ func runSwitch(modelName string) error {
 		return fmt.Errorf("failed to switch to model: %w", err)
 	}
 
+	// Update Claude configuration if needed
+	if err := config.UpdateClaudeEnvConfig(foundModel, foundVendor); err != nil {
+		return fmt.Errorf("failed to update Claude configuration: %w", err)
+	}
+
 	// Save the configuration
 	if err := config.SaveConfig(modixConfig); err != nil {
 		return fmt.Errorf("failed to save configuration: %w", err)

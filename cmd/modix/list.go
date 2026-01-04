@@ -50,41 +50,39 @@ func runList() error {
 			// Show endpoint status - special handling for Anthropic
 			endpointDisplay := ""
 			if strings.ToLower(modelInfo.Vendor) == "anthropic" {
-				endpointDisplay = blue.Sprint("[ - ]")
+				endpointDisplay = blue.Sprintf("%-10s", "[ - ]")
 			} else if modelInfo.Endpoint == "" {
-				endpointDisplay = red.Sprint("[ N ]")
+				endpointDisplay = red.Sprintf("%-10s", "[ N ]")
 			} else {
-				endpointDisplay = green.Sprint("[ Y ]")
+				endpointDisplay = green.Sprintf("%-10s", "[ Y ]")
 			}
 
 			// Show API key status - special handling for Anthropic
 			apiKeyDisplay := ""
 			if strings.ToLower(modelInfo.Vendor) == "anthropic" {
-				apiKeyDisplay = blue.Sprint("[ - ]")
+				apiKeyDisplay = blue.Sprintf("%-10s", "[ - ]")
 			} else if !modelInfo.HasAPIKey {
-				apiKeyDisplay = red.Sprint("[ N ]")
+				apiKeyDisplay = red.Sprintf("%-10s", "[ N ]")
 			} else {
-				apiKeyDisplay = green.Sprint("[ Y ]")
-			}
-
-			// Highlight current model with proper alignment
-			var modelDisplay string
-			if modixConfig.CurrentVendor == modelInfo.Vendor && modixConfig.CurrentModel == modelName {
-				modelDisplay = yellow.Sprintf("%-*s", 35, modelName)
-			} else {
-				modelDisplay = blue.Sprintf("%-*s", 35, modelName)
-			}
-
-			// Highlight current vendor with proper alignment
-			var vendorDisplay string
-			if modixConfig.CurrentVendor == modelInfo.Vendor {
-				vendorDisplay = yellow.Sprintf("%-*s", 15, modelInfo.Vendor)
-			} else {
-				vendorDisplay = blue.Sprintf("%-*s", 15, modelInfo.Vendor)
+				apiKeyDisplay = green.Sprintf("%-10s", "[ Y ]")
 			}
 
 			// Format company name
 			companyDisplay := blue.Sprintf("%-*s", 15, modelInfo.Company)
+
+			// Highlight current model with proper alignment
+			var modelDisplay string
+			var vendorDisplay string
+			isCurrent := (modixConfig.CurrentVendor == modelInfo.Vendor && modixConfig.CurrentModel == modelName)
+			if isCurrent {
+				modelDisplay = yellow.Sprintf("%-*s", 35, modelName)
+				// Only highlight company and vendor for the current model line
+				companyDisplay = yellow.Sprintf("%-*s", 15, modelInfo.Company)
+				vendorDisplay = yellow.Sprintf("%-*s", 15, modelInfo.Vendor)
+			} else {
+				modelDisplay = blue.Sprintf("%-*s", 35, modelName)
+				vendorDisplay = blue.Sprintf("%-*s", 15, modelInfo.Vendor)
+			}
 
 			// Print the line with proper alignment
 			fmt.Printf("%s %s %s %-10s %-10s\n",

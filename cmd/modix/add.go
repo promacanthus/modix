@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/promacanthus/modix/internal/config"
+	"github.com/spf13/cobra"
 )
 
 // addCmd represents the add command
@@ -61,7 +61,7 @@ func runAdd(modelName, company, vendor, endpoint, apiKey string) error {
 		fmt.Printf("Added model '%s' to existing vendor '%s'\n", modelName, vendor)
 	} else {
 		// If vendor doesn't exist, create a new vendor config
-		modelConfig := config.ModelConfig{
+		modelConfig := config.VendorConfig{
 			Company:     company,
 			APIEndpoint: endpoint,
 			APIKey:      apiKey,
