@@ -5,6 +5,10 @@ import (
 	"os"
 
 	"github.com/fatih/color"
+	"github.com/promacanthus/modix/cmd/modix/commands"
+	"github.com/promacanthus/modix/cmd/modix/commands/agent"
+	"github.com/promacanthus/modix/cmd/modix/commands/config"
+	"github.com/promacanthus/modix/cmd/modix/commands/llm"
 	"github.com/spf13/cobra"
 )
 
@@ -49,11 +53,45 @@ func init() {
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "modix",
-	Short: "CLI tool for managing and switching between Claude API backends and other LLMs",
-	Long: `Modix is a CLI tool for managing and switching between Claude API backends and other LLMs.
+	Short: "CLI tool for managing LLM models, vendors, and coding agents",
+	Long: `Modix is a CLI tool for managing LLM models, vendors, and coding agents.
 
-This tool helps you manage different AI model configurations and easily switch between them.`,
-	Version: "0.1.0",
+Manage LLM providers (vendors) and their models, switch between different
+LLM backends, and configure coding agents like Claude Code.
+
+Available command groups:
+  vendor   Manage LLM vendors (add, remove, update, list, show, model)
+  model    Manage and switch LLM models (list, switch, status)
+  llm      Legacy LLM commands (deprecated)
+  agent    Manage coding agents (Claude Code, Gemini CLI, etc.)
+  config   Manage modix configuration
+
+Examples:
+  # Initialize configuration
+  modix config init
+
+  # Add a vendor
+  modix vendor add deepseek --company "DeepSeek" --endpoint "https://api.deepseek.com/v1" --api-key "sk-xxx"
+
+  # Add a model to vendor
+  modix vendor model add deepseek deepseek-reasoner
+
+  # List all models
+  modix model list
+
+  # Switch to a model
+  modix model switch deepseek-reasoner
+
+  # Show current model status
+  modix model status
+
+  # Configure coding agent
+  modix agent add claude-code
+  modix agent config claude-code
+
+  # Check configuration
+  modix config check`,
+	Version: "0.2.0",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -65,18 +103,19 @@ func Execute() error {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Add subcommands
-	RootCmd.AddCommand(addCmd)
-	RootCmd.AddCommand(checkCmd)
-	RootCmd.AddCommand(initCmd)
-	RootCmd.AddCommand(listCmd)
-	RootCmd.AddCommand(statusCmd)
-	RootCmd.AddCommand(switchCmd)
-	RootCmd.AddCommand(pathCmd)
-	RootCmd.AddCommand(removeCmd)
-	RootCmd.AddCommand(showCmd)
-	RootCmd.AddCommand(updateCmd)
+	// Add new command groups
+	RootCmd.AddCommand(commands.VendorCmd)
+	RootCmd.AddCommand(commands.ModelCmd)
+	RootCmd.AddCommand(llm.LLMCmd)
+	RootCmd.AddCommand(agent.AgentCmd)
+	RootCmd.AddCommand(config.ConfigCmd)
+
+	// Add version command
 	RootCmd.AddCommand(versionCmd)
+
+	// Add legacy commands for backward compatibility (optional)
+	// You can remove these later once users migrate
+	addLegacyCommands()
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -84,6 +123,19 @@ func initConfig() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+// addLegacyCommands adds backward-compatible commands
+// TODO: Consider removing these after migration period
+func addLegacyCommands() {
+	// Create aliases for common operations
+	legacyCmd := &cobra.Command{
+		Use:   "legacy",
+		Short: "Legacy commands (deprecated)",
+		Long:  `Legacy commands for backward compatibility. Use new commands instead.`,
+		Hidden: true,
+	}
+	RootCmd.AddCommand(legacyCmd)
 }
 
 func main() {

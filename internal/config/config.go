@@ -14,7 +14,9 @@ type ModixConfig struct {
 	CurrentModel  string                  `json:"current_model,omitempty"`
 	DefaultVendor string                  `json:"default_vendor,omitempty"`
 	DefaultModel  string                  `json:"default_model,omitempty"`
+	CurrentAgent  string                  `json:"current_agent,omitempty"`
 	Vendors       map[string]VendorConfig `json:"vendors,omitempty"`
+	Agents        map[string]AgentConfig  `json:"agents,omitempty"`
 	ConfigVersion string                  `json:"config_version,omitempty"`
 	CreatedAt     time.Time               `json:"created_at,omitempty"`
 	UpdatedAt     time.Time               `json:"updated_at,omitempty"`
@@ -28,6 +30,15 @@ type VendorConfig struct {
 	Models      []string `json:"models,omitempty"`
 }
 
+// AgentConfig represents the configuration for a coding agent
+type AgentConfig struct {
+	Name        string `json:"name,omitempty"`
+	Provider    string `json:"provider,omitempty"`
+	ConfigPath  string `json:"config_path,omitempty"`
+	Enabled     bool   `json:"enabled,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
 // NewModixConfig creates a new default Modix configuration
 func NewModixConfig() *ModixConfig {
 	return &ModixConfig{
@@ -36,6 +47,7 @@ func NewModixConfig() *ModixConfig {
 		DefaultVendor: "anthropic",
 		DefaultModel:  "Claude",
 		Vendors:       make(map[string]VendorConfig),
+		Agents:        make(map[string]AgentConfig),
 		ConfigVersion: "1.0.0",
 	}
 }
