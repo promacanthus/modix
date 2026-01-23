@@ -1,14 +1,111 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+---
 
-See [AGENTS.md](AGENTS.md) for workflow.
+## 项目总览
+
+本项目是一个使用 Go 语言开发的命令行工具。主要实现多智能体协作，共同完成用户提出的问题或者任务。
+
+项目主要分为如下的 4 个模块：
+
+1. Project Management: 用户项目的初始化，包括检查依赖的命令行工具以及新建初始化的配置。
+2. Agent Runtime Management: 这是最核心的模块，负责定义、配置、组合和校验 Agent Runtime。包括如下的 4 个子模块：
+   1. Shell Registry: 负责识别系统中有哪些可用的 CLI，如 Claude code、Codex、Gemini-cli 等（这些在 `modix` 项目中称为 `shell`）并管理它们的配置入口。
+   2. Brain Registry: 负责管理 Brain Profile（即 Provider + LLM Model + Params）处理 API Key、Endpoint 和 Rate Limit 等，提供这些大模型的“可用性检查“。“
+   3. Agent Definition Registry: 负责定义 Agent 的身份，关联 Manifest 并给出默认的偏好（如 default shell + default brain）。
+   4. Agent Runtime Composer: 负责把 Agent Definition Shell Brain 组合成一个 Agent Runtime（即 Agent Runtime = Definition × Shell × Brain × Manifest）。
+3. Execution Substrate: 负责定义如何向 Shell 中发送指令，如何接收输出，这是一个抽象的执行通道，编排多智能体，根据定义相互协作完成任务。
+4. State & Observability: 负责记录配置的变更、Runtime 组合历史等，保证随时可以检查项目的各种状态和历史。
+
+### 重要注意事项
+
+1. 项目中的多智能体之间使用 [beads](https://github.com/steveyegge/beads) 作为唯一的通信标准。
+2. 每个智能体使用 FSM（Finite State Machine）描述状态：
+   1. IDLE
+   2. EXECUTING
+   3. COMPLETED
+   4. FAILED
+3. 由于多智能体的存在，因此整个工作流执行的过程中会有不同的阶段，包括如下所示：
+   1. INIT
+   2. PLANNING
+   3. EXECUTING
+   4. TESTING
+   5. COMPLETED
+   6. FAILED
 
 ---
 
-## Project Overview
+- **项目名（概念 / 文档 / Repo）**：`modix`
+- **CLI 可执行文件名**：`mx`
 
-This is **Modix** (command: `modix`), a Go-based CLI tool for managing and switching between multiple LLM backends and large language models.
+所有命令统一写成：
+
+```bash
+mx <command> [subcommand] [options]
+```
+
+## 重要文件
+
+- `README.md` - Main project documentation (keep this updated!)
+- `.beads/issues.jsonl` - Current issue tracking data
+- `go.mod/go.sum` - Go module and dependency definitions
+- `docs/examples.md` - 项目参考示例
+- `docs/fsm.md` - 有限状态机以及智能体之间交互通信步骤的说明
+- `docs/manifest.md` - agent capability manifest 设计文档
+- `docs/rec.md` - runtime execution context 设计、示例以及整个执行的流转过程
+
+## Milestone
+
+### Milestone 1
+
+Milestone 1 遵循如下的原则：
+
+1. 命令即系统边界：CLI 的层级 = 子系统的真实边界
+2. 只允许声明，不允许执行
+3. 所有命令都可被脚本调用（为后续自动化铺路）
+
+所有的配置都落到本地的文件中，控制配置的规模和对象的数量。
+
+一条总原则：“一个逻辑域 = 一个文件；文件内是 map / array，不是散落的对象文件。”
+
+```shell
+.modix/
+├── shells.json
+├── brains.json
+├── agents.json
+├── runtimes.json
+├── projects.json
+├── state.json
+└── version.json
+```
+
+`cli` 和 `schema` 之间的映射关系：
+
+`mx shell register`: shells.json
+`mx shell inspect`: shells.json
+`mx brain add`: brains.json
+`mx agent define`: agents.json
+`mx agent bind`: agents.json
+`mx agent runtime compose`: runtimes.json + state.json
+`mx project init`: projects.json
+
+### Milestone 2
+
+设计一个最小可运行闭环（MVP Loop），而不是“优雅的完整系统”。让 FSM 驱动一次真实执行，并让 beads 记住发生的一切。
+
+**闭环标准：一次任务，从“人类给目标”到“系统给结果”，中途即使失败，也能自己知道下一步该干嘛。**
+
+最小闭环的角色配置：
+
+- planner: 职责是规划，把目标变成“可执行任务合同”
+- executor: 职责是执行，按合同改代码
+- tester：职责是验收，用事实判断“过 / 不过”
+
+一个最小闭环目标：用一个 FSM，驱动一个 Agent，经由 beads，完成一次任务执行，并留下完整可回放的执行记录。
+
+在这里最核心的是：REC（Runtime Execution Context）这是把所有东西连在一起的地方。
+
+---
 
 ## Issue Tracking
 
@@ -114,21 +211,7 @@ modix/
 ├── cmd/modix/              # CLI commands and main entry point
 │   ├── main.go            # Program entry point
 │   └── commands/          # Individual command implementations
-│       ├── add.go         # Add model command
-│       ├── check.go       # Check configuration command
-│       ├── init.go        # Initialize command
-│       ├── list.go        # List models command
-│       ├── remove.go      # Remove model command
-│       ├── root.go        # Root command
-│       ├── show.go        # Show vendor details command
-│       ├── status.go      # Status command
-│       ├── switch.go      # Switch model command
-│       └── utils.go       # Utility functions
 ├── internal/               # Internal packages
-│   └── config/           # Configuration management
-│       ├── claude.go     # Claude-specific configuration
-│       ├── config.go     # Core configuration structures
-│       └── default.go    # Default configurations
 ├── .beads/               # Beads issue tracking system
 ├── .claude/              # Claude Code configuration
 ├── .github/              # GitHub Actions CI/CD
@@ -163,64 +246,6 @@ bd import -i .beads/issues.jsonl  # Sync SQLite cache
 
 Or use the git hooks in `examples/git-hooks/` for automation.
 
-## Current Project Status
-
-Run `bd stats` to see overall progress.
-
-### Active Areas
-
-- **Core CLI**: Go CLI tool with Cobra framework implemented
-- **Configuration Management**: Complete configuration system with vendor-based organization
-- **Multi-Provider Support**: Support for 8+ LLM providers (Anthropic, DeepSeek, Alibaba, ByteDance, Moonshot AI, Kuaishou, MiniMax, ZHIPU AI)
-- **CLI Commands**: Core commands implemented (init, list, check, add, remove, show, status, switch, path)
-- **Enhanced Features**: Color-coded output, special Anthropic handling, health checks
-- **CI/CD**: Automated builds and releases with GitHub Actions
-- **Documentation**: Comprehensive CLI documentation and usage examples
-
-### Project Goals
-
-- **Stable CLI**: Complete CLI implementation with all planned commands
-- **API Integration**: Integrate with various LLM provider APIs
-- **GUI Interface**: Future GUI configuration interface
-- **Performance**: Model performance benchmarking and optimization
-- **IDE Integration**: Integration with popular IDEs and editors
-
-## Common Tasks
-
-### Adding a New CLI Command
-
-1. Create command file in `cmd/modix/commands/`
-2. Implement the command using Cobra framework
-3. Add command to root command in `cmd/modix/commands/root.go`
-4. Add `--json` flag for programmatic use
-5. Add tests in `cmd/modix/commands/*_test.go`
-6. Update CLI help and documentation
-
-### Adding New LLM Provider
-
-1. Update configuration schema in `internal/config/config.go`
-2. Add vendor definition in `internal/config/default.go`
-3. Add model definitions if needed
-4. Update CLI commands to handle new vendor
-5. Add tests for new functionality
-6. Update README.md with new provider information
-
-### Configuration Management
-
-1. Update configuration structures in `internal/config/config.go`
-2. Add validation logic
-3. Update CLI commands that interact with configuration
-4. Add tests for configuration handling
-5. Update documentation
-
-### Adding Examples
-
-1. Create directory in `examples/` (if exists)
-2. Add README.md explaining the example
-3. Include working code
-4. Link from main README.md if applicable
-5. Mention in relevant documentation
-
 ## Questions?
 
 - Check existing issues: `bd list`
@@ -228,15 +253,6 @@ Run `bd stats` to see overall progress.
 - Read the docs: README.md, AGENTS.md
 - Check CLI help: `modix --help` or `modix <command> --help`
 - Create an issue if unsure: `bd create "Question: ..." -t task -p 2`
-
-## Important Files
-
-- **README.md** - Main project documentation (keep this updated!)
-- **AGENTS.md** - AI agent usage guidelines
-- **.beads/issues.jsonl** - Current issue tracking data
-- **go.mod/go.sum** - Go module and dependency definitions
-- **cmd/modix/main.go** - CLI entry point
-- **internal/config/** - Configuration management system
 
 ## Pro Tips for Agents
 
@@ -280,6 +296,77 @@ go tool cover -html=coverage.out
 
 ---
 
-**Remember**: If you find the workflow confusing or have ideas for improvement, create an issue with your feedback.
+**Remember**:
+
+- If you find the workflow confusing or have ideas for improvement, create an issue with your feedback.
+- 如果你对某些事情不确定或缺少代码库上下文，请要求澄清，而不是编造答案。
+- 在修复 Bug 时，总是在注释中简要解释你的推理。
+
+---
+
+## Claude Skills
+
+项目包含自定义的 Claude Code Skills，用于辅助开发工作流。
+
+### Requirements Gatherer Skill
+
+**用途**: 当用户提出模糊、不明确的需求时，这个 Skill 会扮演该领域的资深专家，帮助梳理需求并生成清晰、可执行的任务清单。
+
+**使用场景**:
+
+- 用户描述一个功能想法但细节不完整
+- 需要从模糊问题中提炼出具体任务
+- 需要优先级排序和范围界定
+- 需要识别隐藏的需求和边缘情况
+
+**使用方法**:
+
+直接向 Claude 描述你的模糊需求，例如：
+
+```text
+我想给我们的应用添加搜索功能
+```
+
+Skill 会自动：
+
+1. 询问关键的澄清问题（谁是用户、痛点是什么、约束条件等）
+2. 识别隐藏的需求（边缘情况、集成点、性能要求等）
+3. 使用 RICE 或 MoSCoW 框架进行优先级排序
+4. 生成具体的、可执行的任务列表
+
+**示例输出**:
+
+```text
+作为资深搜索/UX专家，我需要先澄清几个关键问题：
+
+## 关键问题
+1. 用户搜索什么内容？（产品、文档、用户、文本内容？）
+2. 当前的痛点是什么？（找不到、步骤太多、没有搜索？）
+3. 需要什么搜索能力？（关键词、模糊搜索、过滤器？）
+
+## 优先级任务清单
+P0 - 必须做（3-5天）:
+- 基础关键词搜索
+- 移动端响应式设计
+
+P1 - 应该做（2-3天）:
+- 自动补全
+- 基本过滤器
+
+P2 - 可以做（1-2天）:
+- 搜索分析
+- 高级过滤器
+```
+
+**Skill 文件位置**:
+
+- `.claude/skills/requirements-gatherer/skill.md` - Skill 定义
+- `.claude/skills/requirements-gatherer/skill.json` - Skill 配置
+
+**相关 Skills**:
+
+- `code-simplifier` - 需求明确后用于代码简化
+- `plan` - 详细的技术实现规划
+- `frontend-design` - UI/UX 需求收集
 
 Happy coding!
