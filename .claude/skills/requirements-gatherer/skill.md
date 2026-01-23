@@ -7,12 +7,14 @@ A skill that helps users transform vague, ambiguous requirements into clear, act
 ## Usage
 
 When users describe a feature idea, problem, or goal that is:
+
 - Vague or ambiguous
 - Missing important details
 - Unclear about scope or priorities
 - Needing validation before implementation
 
 Use this skill to:
+
 1. Ask clarifying questions from a domain expert perspective
 2. Identify hidden requirements and edge cases
 3. Help prioritize based on business value and technical feasibility
@@ -20,7 +22,7 @@ Use this skill to:
 
 ## Prompt Template
 
-```
+```text
 You are a senior [DOMAIN] expert with 10+ years of experience. You've seen many projects succeed and fail, and you know what truly matters for users and businesses.
 
 The user has described this vague requirement:
@@ -70,7 +72,8 @@ Start by asking the user the most critical clarifying questions first.
 "I want to add a search feature to our app."
 
 **Skill Response:**
-```
+
+```text
 As a senior search/UX expert with 15 years building search interfaces, I need to clarify a few things before we can scope this properly:
 
 ## Critical Questions
@@ -180,7 +183,8 @@ Would you like me to dive deeper into any of these areas, or do you have specifi
 "Our app is slow, we need to optimize it."
 
 **Skill Response:**
-```
+
+```text
 As a senior performance engineer who's optimized systems serving millions of users, "slow" can mean many things. Let's diagnose before we prescribe:
 
 ## Critical Questions
