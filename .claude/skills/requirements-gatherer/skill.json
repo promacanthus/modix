@@ -3,7 +3,12 @@
   "description": "Helps transform vague requirements into clear, actionable task lists by role-playing as a domain expert",
   "version": "1.0.0",
   "author": "Claude",
-  "tags": ["requirements", "product", "planning", "prioritization"],
+  "tags": [
+    "requirements",
+    "product",
+    "planning",
+    "prioritization"
+  ],
   "usage": "Use when users describe vague features or problems. The skill will ask clarifying questions and generate concrete task lists.",
   "examples": [
     "I want to add search to our app",
