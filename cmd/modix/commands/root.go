@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/promacanthus/modix/internal/tui"
 )
 
 var (
@@ -34,4 +35,14 @@ func Execute() {
 
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&ConfigFormat, "format", "f", "human", "Output format (human, json)")
+
+	// TUI command
+	RootCmd.AddCommand(&cobra.Command{
+		Use:   "tui",
+		Short: "Launch the interactive TUI application",
+		Long:  `Launch the interactive Terminal User Interface for managing Modix projects and configurations.`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return tui.Run()
+		},
+	})
 }
