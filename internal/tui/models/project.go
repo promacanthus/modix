@@ -10,15 +10,15 @@ import (
 
 // ProjectModel represents the project management TUI state
 type ProjectModel struct {
-	projects  []Project
-	selected  int
-	mode      string // "list", "init", "validate", "inspect"
-	form      ProjectForm
-	loading   bool
-	error     error
-	status    string
-	width     int
-	height    int
+	projects []Project
+	selected int
+	mode     string // "list", "init", "validate", "inspect"
+	form     ProjectForm
+	loading  bool
+	error    error
+	status   string
+	width    int
+	height   int
 }
 
 // Project represents a modix project
@@ -40,7 +40,7 @@ type ProjectForm struct {
 // NewProjectModel creates a new project model
 func NewProjectModel() ProjectModel {
 	return ProjectModel{
-		mode:   "list",
+		mode:    "list",
 		loading: false,
 		projects: []Project{
 			{
