@@ -266,10 +266,15 @@ func (m MainModel) initialView() string {
 		"[q] Quit",
 	}
 
+	// Calculate padding to fill the line, ensuring it's never negative
+	paddingWidth := m.width - 2 - len(strings.Join(shortcuts, "  │  "))
+	if paddingWidth < 0 {
+		paddingWidth = 0
+	}
 	shortcutsLine := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#888")).
 		Padding(0, 1).
-		Render("║ " + strings.Join(shortcuts, "  │  ") + strings.Repeat(" ", m.width-2-len(strings.Join(shortcuts, "  │  "))) + " ║")
+		Render("║ " + strings.Join(shortcuts, "  │  ") + strings.Repeat(" ", paddingWidth) + " ║")
 
 	// Assemble all sections
 	sections := []string{
